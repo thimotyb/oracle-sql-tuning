@@ -298,11 +298,213 @@ cd /tmp
 ./setup.sh
 ```
 
+## Installing GUI Clients
+
+While SQL*Plus is available in the Docker container, you may want a graphical interface for easier database management.
+
+### Option 1: Oracle SQL Developer (Official)
+
+Oracle SQL Developer is the official free graphical tool for Oracle databases.
+
+#### Prerequisites
+
+Install Java 11 (if not already installed):
+
+```bash
+sudo apt-get update
+sudo apt-get install -y openjdk-11-jdk
+```
+
+Verify installation:
+
+```bash
+java -version
+```
+
+#### Installation Methods
+
+**Method A: Manual Download (Recommended)**
+
+1. Visit the [Oracle SQL Developer Downloads page](https://www.oracle.com/database/sqldeveloper/technologies/download/)
+2. Accept the Oracle Technology Network License Agreement
+3. Download **"SQL Developer for Other Platforms"** (without JRE)
+4. Extract the archive:
+
+```bash
+cd ~/Downloads
+unzip sqldeveloper-*-no-jre.zip
+sudo mv sqldeveloper /opt/
+```
+
+5. Make it executable and create a launcher:
+
+```bash
+sudo chmod +x /opt/sqldeveloper/sqldeveloper.sh
+
+# Create symlink for easy access
+sudo ln -s /opt/sqldeveloper/sqldeveloper.sh /usr/local/bin/sqldeveloper
+
+# Create desktop entry
+sudo tee /usr/share/applications/sqldeveloper.desktop > /dev/null <<'EOF'
+[Desktop Entry]
+Name=Oracle SQL Developer
+Comment=Oracle SQL Developer Database IDE
+Exec=/opt/sqldeveloper/sqldeveloper.sh
+Icon=/opt/sqldeveloper/icon.png
+Terminal=false
+Type=Application
+Categories=Development;IDE;Database;
+StartupWMClass=Oracle SQL Developer
+EOF
+```
+
+6. Launch SQL Developer:
+
+```bash
+sqldeveloper
+```
+
+Or search for "Oracle SQL Developer" in your applications menu.
+
+**Method B: Using the Installation Script**
+
+This repository includes a helper script:
+
+```bash
+cd tools
+./install-sqldeveloper.sh
+```
+
+Follow the prompts to download and install SQL Developer.
+
+#### First Launch Configuration
+
+On first launch, SQL Developer will ask you to configure:
+
+1. **Specify Java JDK Location:** Select `/usr/lib/jvm/java-11-openjdk-amd64`
+2. **Import Preferences:** Choose "No" unless migrating from a previous installation
+
+#### Creating a Connection in SQL Developer
+
+1. Click the **"+"** button or right-click **"Connections"** → **"New Connection"**
+2. Enter connection details:
+
+**For CDB (XE):**
+- **Connection Name:** `Oracle21c-XE`
+- **Username:** `system`
+- **Password:** `Oracle123`
+- **Connection Type:** `Basic`
+- **Hostname:** `localhost`
+- **Port:** `1521`
+- **Service name:** `XE`
+
+**For PDB (XEPDB1) - Recommended:**
+- **Connection Name:** `Oracle21c-XEPDB1`
+- **Username:** `pdbadmin`
+- **Password:** `Oracle123`
+- **Connection Type:** `Basic`
+- **Hostname:** `localhost`
+- **Port:** `1521`
+- **Service name:** `XEPDB1`
+
+3. Click **"Test"** to verify the connection
+4. If successful, click **"Connect"** or **"Save"**
+
+### Option 2: DBeaver Community (Open Source Alternative)
+
+DBeaver is a free, open-source universal database tool that works well with Oracle.
+
+#### Installation
+
+```bash
+# Add DBeaver repository
+sudo add-apt-repository ppa:serge-rider/dbeaver-ce
+sudo apt-get update
+
+# Install DBeaver
+sudo apt-get install -y dbeaver-ce
+```
+
+Or download from [dbeaver.io](https://dbeaver.io/download/)
+
+#### Launch DBeaver
+
+```bash
+dbeaver
+```
+
+Or search for "DBeaver" in your applications menu.
+
+#### Creating a Connection in DBeaver
+
+1. Click **"New Database Connection"** or press `Ctrl+Shift+N`
+2. Select **"Oracle"** and click **"Next"**
+3. On first use, DBeaver will offer to download Oracle JDBC drivers - click **"Download"**
+4. Enter connection details (same as SQL Developer above)
+5. Click **"Test Connection"** to verify
+6. Click **"Finish"** to save
+
+### Option 3: Command-Line SQL*Plus from Host
+
+Install Oracle Instant Client to use SQL*Plus directly from your host machine:
+
+```bash
+# Install dependencies
+sudo apt-get install -y alien libaio1
+
+# Download Oracle Instant Client from Oracle website
+# Then install the RPM packages:
+sudo alien -i oracle-instantclient-basic-*.rpm
+sudo alien -i oracle-instantclient-sqlplus-*.rpm
+
+# Set environment variables
+export PATH=$PATH:/usr/lib/oracle/21/client64/bin
+export LD_LIBRARY_PATH=/usr/lib/oracle/21/client64/lib
+
+# Add to ~/.bashrc for persistence
+echo 'export PATH=$PATH:/usr/lib/oracle/21/client64/bin' >> ~/.bashrc
+echo 'export LD_LIBRARY_PATH=/usr/lib/oracle/21/client64/lib' >> ~/.bashrc
+```
+
+Connect to the database:
+
+```bash
+sqlplus system/Oracle123@//localhost:1521/XE
+```
+
+## Working with SQL Scripts from This Repository
+
+Once you have a GUI client installed, you can easily execute the workshop scripts:
+
+### Using SQL Developer
+
+1. Open a connection to XEPDB1
+2. Click **File** → **Open** and navigate to a script (e.g., `workshops/ws01.sql`)
+3. Press **F5** to run as script or **F9** to run statement under cursor
+4. View results in the bottom panel
+
+### Using DBeaver
+
+1. Open a connection to XEPDB1
+2. Click **SQL Editor** → **New SQL Script**
+3. Open a file using **File** → **Open File**
+4. Press **Ctrl+Enter** to execute the script
+5. View results in the results panel
+
+### Tips for Workshop Exercises
+
+1. **Always run setup scripts first:** Most workshops have `setupNN.sql` files
+2. **Use the PDB (XEPDB1):** The pluggable database is recommended for application schemas
+3. **Check the CLAUDE.md file:** Contains useful patterns and workflow guidance
+4. **Run cleanup scripts after:** Use `cleanupNN.sql` to reset the environment
+
 ## Resources
 
 - [Oracle Database Express Edition Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/21/xeinl/)
 - [Oracle Container Registry](https://container-registry.oracle.com/)
 - [Oracle Database Docker Images GitHub](https://github.com/oracle/docker-images)
+- [Oracle SQL Developer Documentation](https://docs.oracle.com/en/database/oracle/sql-developer/)
+- [DBeaver Documentation](https://dbeaver.com/docs/)
 
 ## Version Information
 
@@ -310,3 +512,4 @@ cd /tmp
 - **SQL*Plus:** Release 21.0.0.0.0 - Production
 - **Image Tag:** `21.3.0-xe`
 - **Installation Date:** 2025-10-10
+- **Recommended GUI:** Oracle SQL Developer 24.3 or DBeaver Community 24.x
