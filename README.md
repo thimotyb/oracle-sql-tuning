@@ -80,6 +80,12 @@ cd setup
 ./check-setup-docker.sh
 ```
 
+**Note:** If EP, ACS, CS, or TRACE users are missing tables after running `setup-docker.sh`, run the fix script:
+```bash
+cd setup
+./fix-missing-tables.sh
+```
+
 ### 3. Install a GUI Client (Optional)
 
 See [ORACLE-XE-INSTALL.md](ORACLE-XE-INSTALL.md#installing-gui-clients) for detailed instructions.
