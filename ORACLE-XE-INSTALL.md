@@ -341,8 +341,12 @@ sudo mv sqldeveloper /opt/
 ```bash
 sudo chmod +x /opt/sqldeveloper/sqldeveloper.sh
 
-# Create symlink for easy access
-sudo ln -s /opt/sqldeveloper/sqldeveloper.sh /usr/local/bin/sqldeveloper
+# Create wrapper script for command-line access
+sudo tee /usr/local/bin/sqldeveloper > /dev/null <<'WRAPPER'
+#!/bin/bash
+cd /opt/sqldeveloper && ./sqldeveloper.sh "$@"
+WRAPPER
+sudo chmod +x /usr/local/bin/sqldeveloper
 
 # Create desktop entry
 sudo tee /usr/share/applications/sqldeveloper.desktop > /dev/null <<'EOF'

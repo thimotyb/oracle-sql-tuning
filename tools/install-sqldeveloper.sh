@@ -73,9 +73,13 @@ Categories=Development;IDE;Database;
 StartupWMClass=Oracle SQL Developer
 EOF
 
-# Create symlink
-echo "Creating symlink..."
-sudo ln -sf ${SQLD_DIR}/sqldeveloper.sh /usr/local/bin/sqldeveloper
+# Create wrapper script
+echo "Creating command-line wrapper..."
+sudo tee /usr/local/bin/sqldeveloper > /dev/null <<'WRAPPER'
+#!/bin/bash
+cd /opt/sqldeveloper && ./sqldeveloper.sh "$@"
+WRAPPER
+sudo chmod +x /usr/local/bin/sqldeveloper
 
 echo
 echo "==========================================="
