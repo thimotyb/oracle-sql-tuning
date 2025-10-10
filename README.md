@@ -44,17 +44,32 @@ This script will:
 - Set up sample data and tables for the exercises
 
 **Users created:**
-- **SPM** (spm/spm) - SQL Performance Management
-- **EP** (ep/ep) - Explain Plan
-- **TRACE** (trace/trace) - Application Tracing
-- **ACS** (acs/acs) - Adaptive Cursor Sharing
-- **CS** (cs/cs) - Cursor Sharing
-- **AST** (ast/ast) - Automatic Statistics Tuning
-- **HR** (hr/hr) - Human Resources (unlocked)
-- **SHC, NIC, IC** - Access Paths users
-- **QRC** (qrc/qrc) - Query Result Cache
 
-All users have passwords matching their usernames.
+| Username | Password | Purpose | Status |
+|----------|----------|---------|--------|
+| **SPM** | spm | SQL Performance Management | ✓ Created |
+| **EP** | ep | Explain Plan practice | ✓ Created |
+| **TRACE** | trace | Application Tracing practice | ✓ Created |
+| **ACS** | acs | Adaptive Cursor Sharing | ✓ Created |
+| **CS** | cs | Cursor Sharing techniques | ✓ Created |
+| **AST** | ast | Automatic Statistics Tuning | ✓ Created |
+| **AGS** | ags | Automatic Gather Stats | ✓ Created |
+| **HR** | hr | Human Resources sample schema | ⚠ Optional* |
+| **SH** | sh | Sales History sample schema | ⚠ Optional* |
+| **QRC** | qrc | Query Result Cache practice | ⚠ Optional* |
+| **SHC** | shc | Access Paths - SHC user | ⚠ Optional* |
+| **NIC** | nic | Access Paths - NIC user | ⚠ Optional* |
+| **IC** | ic | Access Paths - IC user | ⚠ Optional* |
+
+**Note:** All users have passwords matching their usernames (e.g., `spm/spm`, `ep/ep`).
+
+\* *Optional users require Oracle sample schemas to be installed separately (HR, SH) or may have setup script dependencies.*
+
+To verify which users were successfully created:
+```bash
+cd setup
+./check-setup-docker.sh
+```
 
 ### 3. Install a GUI Client (Optional)
 
