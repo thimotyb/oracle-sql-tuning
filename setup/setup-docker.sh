@@ -404,6 +404,34 @@ exit
 EOF
 
 echo
+echo "=== Installing Java 11 and SQLcl for SH data loading ==="
+# Check if Java 11+ is already installed
+if ls -d /usr/lib/jvm/java-1*-openjdk* 2>/dev/null | grep -E 'java-(11|17|21)' >/dev/null; then
+    echo "✓ Java 11+ already installed"
+else
+    echo "Installing Java 11..."
+    yum install -y java-11-openjdk-headless
+    echo "✓ Java 11 installed"
+fi
+
+# Set JAVA_HOME
+export JAVA_HOME=\$(ls -d /usr/lib/jvm/java-1*-openjdk* 2>/dev/null | grep -E 'java-(11|17|21)' | head -1)
+echo "JAVA_HOME: \$JAVA_HOME"
+
+# Download and install SQLcl if not present
+if [ ! -d "/opt/sqlcl" ]; then
+    echo "Downloading SQLcl..."
+    cd /tmp
+    wget -q --show-progress https://download.oracle.com/otn_software/java/sqldeveloper/sqlcl-latest.zip
+    unzip -q sqlcl-latest.zip
+    mv sqlcl /opt/
+    chmod -R 755 /opt/sqlcl
+    echo "✓ SQLcl installed to /opt/sqlcl"
+else
+    echo "✓ SQLcl already installed"
+fi
+
+echo
 echo "=== Installing Oracle Sample Schemas (HR, SH) ==="
 if [ -d "db-sample-schemas" ]; then
     # Install HR
@@ -412,11 +440,30 @@ if [ -d "db-sample-schemas" ]; then
     sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @install_hr_auto.sql || echo "WARNING: HR installation failed"
     cd $WORK_DIR
 
-    # Install SH
-    echo "Installing SH (Sales History) schema..."
-    echo "(This may take 5-10 minutes due to large data volume)"
+    # Install SH schema structure (without data first)
+    echo "Installing SH (Sales History) schema structure..."
     cd db-sample-schemas/sales_history
-    sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @install_sh_auto.sql || echo "WARNING: SH installation failed"
+    sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @install_sh_auto.sql || echo "WARNING: SH schema structure creation failed"
+    cd $WORK_DIR
+
+    # Create SQLcl-compatible SH data loading script
+    cat > $WORK_DIR/db-sample-schemas/sales_history/load_sh_data.sql <<'SQLCLSCRIPT'
+SET ECHO OFF
+SET VERIFY OFF
+SET SERVEROUTPUT ON
+ALTER SESSION SET CURRENT_SCHEMA=SH;
+ALTER SESSION SET NLS_LANGUAGE=American;
+SELECT 'Loading SH data - Start time: ' || systimestamp FROM dual;
+@@sh_populate.sql
+SELECT 'Loading SH data - End time: ' || systimestamp FROM dual;
+EXIT
+SQLCLSCRIPT
+
+    echo
+    echo "=== Loading SH Schema Data (this may take 5-10 minutes) ==="
+    cd $WORK_DIR/db-sample-schemas/sales_history
+    export JAVA_HOME=\$(ls -d /usr/lib/jvm/java-1*-openjdk* 2>/dev/null | grep -E 'java-(11|17|21)' | head -1)
+    /opt/sqlcl/bin/sql sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @load_sh_data.sql || echo "WARNING: SH data loading failed"
     cd $WORK_DIR
 
     # Now create TRACE tables (depends on SH.SALES)
