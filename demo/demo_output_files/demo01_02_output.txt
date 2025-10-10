@@ -1,0 +1,26 @@
+select p.town_name, c.cust_last_name
+  from customers2 c, postal_codes p
+ where p.code1 = c.code1
+   and p.code2 = c.code2
+   and p.code1 = '67'
+   and c.country_id = 52790
+/
+
+********************************************************************************
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch       62      0.03       0.06       1459       1520          0         911
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       64      0.04       0.07       1459       1520          0         911
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 97
+Number of plan statistics captured: 1
+Rows (1st) Rows (avg) Rows (max)  Row Source Operation
+---------- ---------- ----------  ---------------------------------------------------
+       911        911        911  HASH JOIN  (cr=1520 pr=1459 pw=0 time=61383¡¦)
+        10         10         10   TABLE ACCESS FULL POSTAL_CODES (cr=6 pr=6¡¦)
+       911        911        911   TABLE ACCESS FULL CUSTOMERS2 (cr=1514 pr=1453¡¦)

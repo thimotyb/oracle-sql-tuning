@@ -1,0 +1,105 @@
+;;; 
+Export: Release 11.2.0.1.0 - Production on Thu May 3 01:19:53 2012
+
+Copyright (c) 1982, 2009, Oracle and/or its affiliates.  All rights reserved.
+;;; 
+Connected to: Oracle Database 11g Enterprise Edition Release 11.2.0.1.0 - Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+Starting "SH"."SYS_EXPORT_SCHEMA_02":  sh/******** directory=sh_dir dumpfile=sh.dmp logfile=shexp.log schemas=sh exclude=function, exclude exclude=table:"IN exclude 'SALES1')" exclude=index:"IN ('SUP_TEXT_IDX')" 
+Estimate in progress using BLOCKS method...
+Processing object type SCHEMA_EXPORT/TABLE/TABLE_DATA
+Total estimation using BLOCKS method: 36.62 MB
+Processing object type SCHEMA_EXPORT/USER
+Processing object type SCHEMA_EXPORT/SYSTEM_GRANT
+Processing object type SCHEMA_EXPORT/ROLE_GRANT
+Processing object type SCHEMA_EXPORT/DEFAULT_ROLE
+Processing object type SCHEMA_EXPORT/PRE_SCHEMA/PROCACT_SCHEMA
+Processing object type SCHEMA_EXPORT/SEQUENCE/SEQUENCE
+Processing object type SCHEMA_EXPORT/TABLE/TABLE
+Processing object type SCHEMA_EXPORT/TABLE/GRANT/OWNER_GRANT/OBJECT_GRANT
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/INDEX
+Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/CONSTRAINT
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+Processing object type SCHEMA_EXPORT/TABLE/COMMENT
+Processing object type SCHEMA_EXPORT/VIEW/VIEW
+Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/REF_CONSTRAINT
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/FUNCTIONAL_AND_BITMAP/INDEX
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/FUNCTIONAL_AND_BITMAP/INDEX_STATISTICS
+Processing object type SCHEMA_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+Processing object type SCHEMA_EXPORT/TABLE/STATISTICS/USER_PREF_STATISTICS
+Processing object type SCHEMA_EXPORT/MATERIALIZED_VIEW
+Processing object type SCHEMA_EXPORT/DIMENSION
+. . exported "SH"."CUSTOMERS"                            9.853 MB   55500 rows
+. . exported "SH"."SUPPLEMENTARY_DEMOGRAPHICS"           697.3 KB    4500 rows
+. . exported "SH"."SALES":"SALES_Q4_2001"                2.257 MB   69749 rows
+. . exported "SH"."SALES":"SALES_Q1_1999"                2.071 MB   64186 rows
+. . exported "SH"."SALES":"SALES_Q3_2001"                2.130 MB   65769 rows
+. . exported "SH"."SALES":"SALES_Q1_2000"                2.012 MB   62197 rows
+. . exported "SH"."SALES":"SALES_Q1_2001"                1.965 MB   60608 rows
+. . exported "SH"."SALES":"SALES_Q2_2001"                2.051 MB   63292 rows
+. . exported "SH"."SALES":"SALES_Q3_1999"                2.166 MB   67138 rows
+. . exported "SH"."SALES":"SALES_Q4_1999"                2.014 MB   62388 rows
+. . exported "SH"."SYS_EXPORT_SCHEMA_01"                 710.6 KB    1238 rows
+. . exported "SH"."SALES":"SALES_Q2_2000"                1.802 MB   55515 rows
+. . exported "SH"."SALES":"SALES_Q3_2000"                1.909 MB   58950 rows
+. . exported "SH"."SALES":"SALES_Q4_1998"                1.581 MB   48874 rows
+. . exported "SH"."SALES":"SALES_Q4_2000"                1.814 MB   55984 rows
+. . exported "SH"."SALES":"SALES_Q2_1999"                1.754 MB   54233 rows
+. . exported "SH"."SALES":"SALES_Q1_1998"                1.412 MB   43687 rows
+. . exported "SH"."SALES":"SALES_Q3_1998"                1.633 MB   50515 rows
+. . exported "SH"."SALES":"SALES_Q2_1998"                1.160 MB   35758 rows
+. . exported "SH"."FWEEK_PSCAT_SALES_MV"                 419.8 KB   11266 rows
+. . exported "SH"."PROMOTIONS"                           58.89 KB     503 rows
+. . exported "SH"."TIMES"                                380.8 KB    1826 rows
+. . exported "SH"."PLAN_TABLE"                           141.8 KB     279 rows
+. . exported "SH"."COSTS":"COSTS_Q4_2001"                278.4 KB    9011 rows
+. . exported "SH"."COSTS":"COSTS_Q1_1999"                183.5 KB    5884 rows
+. . exported "SH"."COSTS":"COSTS_Q1_2001"                227.8 KB    7328 rows
+. . exported "SH"."COSTS":"COSTS_Q2_2001"                184.5 KB    5882 rows
+. . exported "SH"."COSTS":"COSTS_Q3_2001"                234.4 KB    7545 rows
+. . exported "SH"."COSTS":"COSTS_Q1_1998"                139.5 KB    4411 rows
+. . exported "SH"."COSTS":"COSTS_Q1_2000"                120.6 KB    3772 rows
+. . exported "SH"."COSTS":"COSTS_Q2_1998"                79.52 KB    2397 rows
+. . exported "SH"."COSTS":"COSTS_Q2_1999"                132.5 KB    4179 rows
+. . exported "SH"."COSTS":"COSTS_Q2_2000"                119.0 KB    3715 rows
+. . exported "SH"."COSTS":"COSTS_Q3_1998"                131.1 KB    4129 rows
+. . exported "SH"."COSTS":"COSTS_Q3_1999"                137.3 KB    4336 rows
+. . exported "SH"."COSTS":"COSTS_Q3_2000"                151.4 KB    4798 rows
+. . exported "SH"."COSTS":"COSTS_Q4_1998"                144.7 KB    4577 rows
+. . exported "SH"."COSTS":"COSTS_Q4_1999"                159.0 KB    5060 rows
+. . exported "SH"."COSTS":"COSTS_Q4_2000"                160.2 KB    5088 rows
+. . exported "SH"."CAL_MONTH_SALES_MV"                   6.312 KB      48 rows
+. . exported "SH"."CHANNELS"                              7.25 KB       5 rows
+. . exported "SH"."COUNTRIES"                            10.20 KB      23 rows
+. . exported "SH"."PROD1"                                26.17 KB      72 rows
+. . exported "SH"."PRODUCTS"                             26.18 KB      72 rows
+. . exported "SH"."COSTS":"COSTS_1995"                       0 KB       0 rows
+. . exported "SH"."COSTS":"COSTS_1996"                       0 KB       0 rows
+. . exported "SH"."COSTS":"COSTS_H1_1997"                    0 KB       0 rows
+. . exported "SH"."COSTS":"COSTS_H2_1997"                    0 KB       0 rows
+. . exported "SH"."COSTS":"COSTS_Q1_2002"                    0 KB       0 rows
+. . exported "SH"."COSTS":"COSTS_Q1_2003"                    0 KB       0 rows
+. . exported "SH"."COSTS":"COSTS_Q2_2002"                    0 KB       0 rows
+. . exported "SH"."COSTS":"COSTS_Q2_2003"                    0 KB       0 rows
+. . exported "SH"."COSTS":"COSTS_Q3_2002"                    0 KB       0 rows
+. . exported "SH"."COSTS":"COSTS_Q3_2003"                    0 KB       0 rows
+. . exported "SH"."COSTS":"COSTS_Q4_2002"                    0 KB       0 rows
+. . exported "SH"."COSTS":"COSTS_Q4_2003"                    0 KB       0 rows
+. . exported "SH"."DIMENSION_EXCEPTIONS"                     0 KB       0 rows
+. . exported "SH"."SALES":"SALES_1995"                       0 KB       0 rows
+. . exported "SH"."SALES":"SALES_1996"                       0 KB       0 rows
+. . exported "SH"."SALES":"SALES_H1_1997"                    0 KB       0 rows
+. . exported "SH"."SALES":"SALES_H2_1997"                    0 KB       0 rows
+. . exported "SH"."SALES":"SALES_Q1_2002"                    0 KB       0 rows
+. . exported "SH"."SALES":"SALES_Q1_2003"                    0 KB       0 rows
+. . exported "SH"."SALES":"SALES_Q2_2002"                    0 KB       0 rows
+. . exported "SH"."SALES":"SALES_Q2_2003"                    0 KB       0 rows
+. . exported "SH"."SALES":"SALES_Q3_2002"                    0 KB       0 rows
+. . exported "SH"."SALES":"SALES_Q3_2003"                    0 KB       0 rows
+. . exported "SH"."SALES":"SALES_Q4_2002"                    0 KB       0 rows
+. . exported "SH"."SALES":"SALES_Q4_2003"                    0 KB       0 rows
+Master table "SH"."SYS_EXPORT_SCHEMA_02" successfully loaded/unloaded
+******************************************************************************
+Dump file set for SH.SYS_EXPORT_SCHEMA_02 is:
+  /home/oracle/demo/sh.dmp
+Job "SH"."SYS_EXPORT_SCHEMA_02" successfully completed at 01:21:00

@@ -1,0 +1,27 @@
+select p.town_name, c.cust_last_name
+  from customers c, postal_codes p
+ where p.code1 = substr(c.cust_postal_code,1,2)
+   and p.code2 = substr(c.cust_postal_code,3,3)
+   and p.code1 = '67'
+   and c.country_id = 52790
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.05          1          1          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch       62      0.07       0.07       1456       2495          0         911
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       64      0.08       0.12       1457       2496          0         911
+
+Misses in library cache during parse: 1
+Optimizer mode: FIRST_ROWS
+Parsing user id: 97
+Number of plan statistics captured: 1
+
+Rows (1st) Rows (avg) Rows (max)  Row Source Operation
+---------- ---------- ----------  ---------------------------------------------------
+       911        911        911  NESTED LOOPS  (cr=2495 pr=1456 pw=0 time=62152 us)
+       911        911        911   NESTED LOOPS  (cr=1584 pr=1455 pw=0 time=45208 us cost=1396 size=57 card=1)
+       911        911        911    TABLE ACCESS FULL CUSTOMERS (cr=1515 pr=1453 pw=0 time=23479 us cost=405 size=41580 card=990)
+       911        911        911    INDEX UNIQUE SCAN POSTAL_CODES_PK (cr=69 pr=2 pw=0 time=12644 us cost=0 size=0 card=1)(object id 80254)
+       911        911        911   TABLE ACCESS BY INDEX ROWID POSTAL_CODES (cr=911 pr=1 pw=0 time=10950 us cost=1 size=15 card=1)

@@ -1,0 +1,141 @@
+select count(*)
+from
+ customers where cust_marital_status is null
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.10       0.10       1434       1457          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.10       0.10       1434       1457          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=1457 pr=1434 pw=0 time=106195 us)
+  17428   TABLE ACCESS FULL CUSTOMERS (cr=1457 pr=1434 pw=0 time=575669 us)
+
+********************************************************************************
+
+select /*+ index(c cust_marital_status_ix) */ count(*)
+from
+ customers c where cust_marital_status is null
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.10       0.10       1432       1457          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.10       0.10       1432       1457          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=1457 pr=1432 pw=0 time=104905 us)
+  17428   TABLE ACCESS FULL CUSTOMERS (cr=1457 pr=1432 pw=0 time=471086 us)
+
+********************************************************************************
+
+select count(*)
+from
+ customers where cust_marital_status is not null
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.02       0.02         99        106          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.02       0.02         99        106          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=106 pr=99 pw=0 time=21688 us)
+  38072   INDEX FAST FULL SCAN CUST_MARITAL_STATUS_IX (cr=106 pr=99 pw=0 time=305076 us)(object id 57897)
+
+********************************************************************************
+
+select max(cust_year_of_birth)
+from
+ customers where cust_marital_status is null
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.10       0.10       1438       1457          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.10       0.10       1438       1457          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=1457 pr=1438 pw=0 time=105068 us)
+  17428   TABLE ACCESS FULL CUSTOMERS (cr=1457 pr=1438 pw=0 time=331644 us)
+
+********************************************************************************
+
+select /*+ index(c cust_marital_status_ix) */ max(cust_year_of_birth)
+from
+ customers c where cust_marital_status is null
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.10       0.10       1434       1457          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.10       0.10       1434       1457          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=1457 pr=1434 pw=0 time=105613 us)
+  17428   TABLE ACCESS FULL CUSTOMERS (cr=1457 pr=1434 pw=0 time=401327 us)
+
+********************************************************************************
+
+select max(cust_year_of_birth)
+from
+ customers where cust_marital_status is not null
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.11       0.11       1432       1457          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.11       0.12       1432       1457          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=1457 pr=1432 pw=0 time=117386 us)
+  38072   TABLE ACCESS FULL CUSTOMERS (cr=1457 pr=1432 pw=0 time=343130 us)

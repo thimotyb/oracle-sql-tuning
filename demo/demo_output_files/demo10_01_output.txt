@@ -1,0 +1,92 @@
+select count(*)
+  from customers
+ where cust_first_name = 'Max'  or cust_last_name = 'Colven'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.00       0.00          0          4          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.00       0.00          0          4          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=4 pr=0 pw=0 time=260 us)
+      1   BITMAP CONVERSION COUNT (cr=4 pr=0 pw=0 time=237 us)
+      1    BITMAP OR  (cr=4 pr=0 pw=0 time=223 us)
+      1     BITMAP CONVERSION FROM ROWIDS (cr=2 pr=0 pw=0 time=120 us)
+     81      INDEX RANGE SCAN CUST_LAST_NAME_IX (cr=2 pr=0 pw=0 time=276 us)(object id 54182)
+      1     BITMAP CONVERSION FROM ROWIDS (cr=2 pr=0 pw=0 time=75 us)
+     62      INDEX RANGE SCAN CUST_FIRST_NAME_IX (cr=2 pr=0 pw=0 time=136 us)(object id 54181)
+
+********************************************************************************
+
+select count(*)
+from (
+select *
+  from customers
+ where cust_first_name = 'Max'
+union
+select *
+  from customers
+ where cust_last_name = 'Colven')
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.00       0.00          0         23          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.00       0.00          0         23          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=23 pr=0 pw=0 time=924 us)
+    127   VIEW  (cr=23 pr=0 pw=0 time=1534 us)
+    127    SORT UNIQUE (cr=23 pr=0 pw=0 time=1023 us)
+    143     UNION-ALL  (cr=23 pr=0 pw=0 time=1352 us)
+     62      TABLE ACCESS BY INDEX ROWID CUSTOMERS (cr=7 pr=0 pw=0 time=547 us)
+     62       INDEX RANGE SCAN CUST_FIRST_NAME_IX (cr=2 pr=0 pw=0 time=279 us)(object id 54181)
+     81      TABLE ACCESS BY INDEX ROWID CUSTOMERS (cr=16 pr=0 pw=0 time=827 us)
+     81       INDEX RANGE SCAN CUST_LAST_NAME_IX (cr=2 pr=0 pw=0 time=175 us)(object id 54182)
+
+********************************************************************************
+
+select count(*)
+from (
+select *
+  from customers
+ where cust_first_name = 'Max'
+union all
+select *
+  from customers
+ where cust_last_name = 'Colven')
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.00       0.00          0          4          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.00       0.00          0          4          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=4 pr=0 pw=0 time=225 us)
+    143   VIEW  (cr=4 pr=0 pw=0 time=1336 us)
+    143    UNION-ALL PARTITION (cr=4 pr=0 pw=0 time=762 us)
+     62     INDEX RANGE SCAN CUST_FIRST_NAME_IX (cr=2 pr=0 pw=0 time=220 us)(object id 54181)
+     81     INDEX RANGE SCAN CUST_LAST_NAME_IX (cr=2 pr=0 pw=0 time=255 us)(object id 54182)

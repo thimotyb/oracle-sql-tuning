@@ -1,0 +1,85 @@
+select count(*)
+  from sales s, customers c
+ where s.cust_id = c.cust_id
+   and prod_id = 120
+   and c.cust_credit_limit > 10000
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.15       0.15       1441       1561          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.15       0.15       1441       1561          0           1
+
+Misses in library cache during parse: 0
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=1561 pr=1441 pw=0 time=155233 us)
+   1422   HASH JOIN  (cr=1561 pr=1441 pw=0 time=146010 us)
+   4805    TABLE ACCESS FULL CUSTOMERS (cr=1458 pr=1441 pw=0 time=43591 us)
+  19403    INDEX RANGE SCAN SALES_PK (cr=103 pr=0 pw=0 time=155366 us)(object id 54736)
+
+********************************************************************************
+
+select 1
+  from sales s
+ where prod_id = 120
+   and exists (select 1
+                 from customers c
+                where s.cust_id = c.cust_id
+                  and c.cust_credit_limit > 10000)
+   and rownum =1
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.00       0.00          0         45          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.00       0.00          0         45          0           1
+
+Misses in library cache during parse: 0
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  COUNT STOPKEY (cr=45 pr=0 pw=0 time=1988 us)
+      1   NESTED LOOPS SEMI (cr=45 pr=0 pw=0 time=1944 us)
+     82    INDEX RANGE SCAN SALES_PK (cr=3 pr=0 pw=0 time=2653 us)(object id 54736)
+      1    TABLE ACCESS BY INDEX ROWID CUSTOMERS (cr=42 pr=0 pw=0 time=1428 us)
+     20     INDEX UNIQUE SCAN CUSTOMERS_PK (cr=22 pr=0 pw=0 time=662 us)(object id 54744)
+
+********************************************************************************
+
+select 1
+  from customers c
+ where c.cust_credit_limit > 10000
+   and exists (select 1
+                 from sales s
+                where s.cust_id = c.cust_id
+                  and s.prod_id = 120)
+   and rownum =1
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.00       0.00          5         20          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.00       0.00          5         20          0           1
+
+Misses in library cache during parse: 0
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  COUNT STOPKEY (cr=20 pr=5 pw=0 time=1104 us)
+      1   NESTED LOOPS SEMI (cr=20 pr=5 pw=0 time=1058 us)
+      7    TABLE ACCESS FULL CUSTOMERS (cr=4 pr=5 pw=0 time=660 us)
+      1    INDEX RANGE SCAN SALES_PK (cr=16 pr=0 pw=0 time=334 us)(object id 54736)

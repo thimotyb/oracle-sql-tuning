@@ -1,0 +1,72 @@
+select sum(quantity_sold)
+  from sales_np
+ where time_id between to_date('19980101', 'yyyymmdd') and to_date('19981231', 'yyyymmdd')
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.01       0.01          0          2          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.44       0.44       4182       4441          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.46       0.46       4182       4443          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=4441 pr=4182 pw=0 time=449159 us)
+ 178834   TABLE ACCESS FULL SALES_NP (cr=4441 pr=4182 pw=0 time=1610162 us)
+
+********************************************************************************
+
+select sum(quantity_sold)
+  from sales
+ where time_id between to_date('19980101', 'yyyymmdd') and to_date('19981231', 'yyyymmdd')
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.01       0.01          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.23       0.23          0        308          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.24       0.24          0        308          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=308 pr=0 pw=0 time=232306 us)
+ 178834   PARTITION RANGE ITERATOR PARTITION: 5 8 (cr=308 pr=0 pw=0 time=3934636 us)
+ 178834    TABLE ACCESS FULL SALES PARTITION: 5 8 (cr=308 pr=0 pw=0 time=1610115 us)
+
+********************************************************************************
+
+select /*+ parallel(sales,4) */ sum(quantity_sold)
+  from sales
+ where time_id between to_date('19980101', 'yyyymmdd') and to_date('19981231', 'yyyymmdd')
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.01       0.01          0          0          0           0
+Execute      1      0.00       0.18          0         12          0           0
+Fetch        2      0.00       0.45          0          0          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.02       0.65          0         12          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=12 pr=0 pw=0 time=638640 us)
+      4   PX COORDINATOR  (cr=12 pr=0 pw=0 time=623822 us)
+      0    PX SEND QC (RANDOM) :TQ10000 (cr=0 pr=0 pw=0 time=0 us)
+      0     SORT AGGREGATE (cr=0 pr=0 pw=0 time=0 us)
+      0      PX BLOCK ITERATOR PARTITION: 5 8 (cr=0 pr=0 pw=0 time=0 us)
+      0       TABLE ACCESS FULL SALES PARTITION: 5 8 (cr=0 pr=0 pw=0 time=0 us)
+      

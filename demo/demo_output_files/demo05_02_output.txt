@@ -1,0 +1,95 @@
+select count(*)
+from
+ customers where cust_marital_status is null
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.00       0.02          2          3          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.00       0.02          2          3          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=3 pr=2 pw=0 time=20641 us)
+      3   BITMAP CONVERSION COUNT (cr=3 pr=2 pw=0 time=20720 us)
+      3    BITMAP INDEX SINGLE VALUE CUST_MARITAL_STATUS_BIX (cr=3 pr=2 pw=0 time=642 us)(object id 57898)
+
+********************************************************************************
+
+select count(*)
+from
+ customers where cust_marital_status is not null
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.00       0.00          3         10          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.00       0.00          3         10          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=10 pr=3 pw=0 time=767 us)
+     15   BITMAP CONVERSION COUNT (cr=10 pr=3 pw=0 time=856 us)
+     15    BITMAP INDEX FAST FULL SCAN CUST_MARITAL_STATUS_BIX (cr=10 pr=3 pw=0 time=572 us)(object id 57898)
+
+********************************************************************************
+
+select max(cust_year_of_birth)
+from
+ customers where cust_marital_status is null
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.09       0.09       1285       1457          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.10       0.09       1285       1457          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=1457 pr=1285 pw=0 time=96769 us)
+  17428   TABLE ACCESS FULL CUSTOMERS (cr=1457 pr=1285 pw=0 time=453268 us)
+
+********************************************************************************
+
+select max(cust_year_of_birth)
+from
+ customers where cust_marital_status is not null
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.10       0.10       1288       1457          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.11       0.11       1288       1457          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=1457 pr=1288 pw=0 time=107096 us)
+  38072   TABLE ACCESS FULL CUSTOMERS (cr=1457 pr=1288 pw=0 time=342811 us)

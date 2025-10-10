@@ -1,0 +1,43 @@
+select cust_last_name
+from
+ customers where cust_id= '200'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.00       0.00          3          3          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.00       0.00          3          3          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 66
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  TABLE ACCESS BY INDEX ROWID CUSTOMERS (cr=3 pr=3 pw=0 time=691 us)
+      1   INDEX UNIQUE SCAN CUSTOMERS_PK (cr=2 pr=2 pw=0 time=579 us)(object id 54691)
+
+********************************************************************************
+
+select cust_last_name
+from
+ customers where cust_id=  200
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.00       0.00          0          3          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.00       0.00          0          3          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 66
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  TABLE ACCESS BY INDEX ROWID CUSTOMERS (cr=3 pr=0 pw=0 time=88 us)
+      1   INDEX UNIQUE SCAN CUSTOMERS_PK (cr=2 pr=0 pw=0 time=44 us)(object id 54691)

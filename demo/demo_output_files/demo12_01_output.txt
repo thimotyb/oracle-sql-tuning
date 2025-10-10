@@ -1,0 +1,70 @@
+select cust_id, cust_first_name, cust_last_name, cust_state_province
+  from customers
+ where country_id between 52788 and 52790
+   and cust_state_province like 'W%'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.06       0.07          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch       76      0.15       0.29       1453       1532          0        1125
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       78      0.22       0.36       1453       1532          0        1125
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+   1125  TABLE ACCESS FULL CUSTOMERS (cr=1532 pr=1453 pw=0 time=73972 us)
+
+********************************************************************************
+
+select /*+ index(c cust_country_state_city_ix) */ cust_id, cust_first_name, cust_last_name, cust_state_province
+  from customers c
+ where country_id between 52788 and 52790
+   and cust_state_province like 'W%'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch       76      0.07       0.11        169       1240          0        1125
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       78      0.07       0.12        169       1240          0        1125
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+   1125  TABLE ACCESS BY INDEX ROWID CUSTOMERS (cr=1240 pr=169 pw=0 time=162482 us)
+   1125   INDEX SKIP SCAN CUST_COUNTRY_STATE_CITY_IX (cr=162 pr=12 pw=0 time=70035 us)(object id 56234)
+
+********************************************************************************
+
+select /*+ index(c cust_country_state_city_ix) */ cust_id, cust_first_name, cust_last_name, cust_state_province
+  from customers c
+ where country_id in (52788, 52789, 52790)
+   and cust_state_province like 'W%'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch       76      0.03       0.03         57       1168          0        1125
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       78      0.03       0.04         57       1168          0        1125
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+   1125  INLIST ITERATOR  (cr=1168 pr=57 pw=0 time=87054 us)
+   1125   TABLE ACCESS BY INDEX ROWID CUSTOMERS (cr=1168 pr=57 pw=0 time=69126 us)
+   1125    INDEX RANGE SCAN CUST_COUNTRY_STATE_CITY_IX (cr=90 pr=0 pw=0 time=25085 us)(object id 56234)
+

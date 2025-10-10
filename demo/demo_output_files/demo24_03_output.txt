@@ -1,0 +1,85 @@
+update costs C
+   set unit_price = (select prod_list_price
+                       from products P
+                      where P.prod_id = C.prod_id)
+ where unit_cost > 80
+   and prod_id in (select prod_id from products where prod_category='Photo')
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.45       0.45          0       1274       3553        1669
+Fetch        0      0.00       0.00          0          0          0           0
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        2      0.45       0.45          0       1274       3553        1669
+
+Misses in library cache during parse: 0
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      0  UPDATE  COSTS (cr=1274 pr=0 pw=0 time=455976 us)
+   1669   HASH JOIN  (cr=852 pr=0 pw=0 time=110148 us)
+     20    TABLE ACCESS BY INDEX ROWID PRODUCTS (cr=4 pr=0 pw=0 time=1112 us)
+     20     INDEX RANGE SCAN PRODUCTS_PROD_CAT_IX (cr=1 pr=0 pw=0 time=115 us)(object id 54741)
+  16033    PARTITION RANGE ALL PARTITION: 1 28 (cr=848 pr=0 pw=0 time=434156 us)
+  16033     TABLE ACCESS FULL COSTS PARTITION: 1 28 (cr=848 pr=0 pw=0 time=227756 us)
+      3   TABLE ACCESS BY INDEX ROWID PRODUCTS (cr=5 pr=0 pw=0 time=596 us)
+      3    INDEX UNIQUE SCAN PRODUCTS_PK (cr=2 pr=0 pw=0 time=356 us)(object id 54739)
+
+********************************************************************************
+
+delete from costs
+ where unit_cost > 80
+   and channel_id = 4
+   and prod_id in (select prod_id from products where prod_category='Photo')
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.15       0.15          0        616       1392         432
+Fetch        0      0.00       0.00          0          0          0           0
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        2      0.15       0.15          0        616       1392         432
+
+Misses in library cache during parse: 0
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      0  DELETE  COSTS (cr=616 pr=0 pw=0 time=158040 us)
+    432   HASH JOIN  (cr=616 pr=0 pw=0 time=136141 us)
+     20    TABLE ACCESS BY INDEX ROWID PRODUCTS (cr=4 pr=0 pw=0 time=970 us)
+     20     INDEX RANGE SCAN PRODUCTS_PROD_CAT_IX (cr=1 pr=0 pw=0 time=194 us)(object id 54741)
+   4070    PARTITION RANGE ALL PARTITION: 1 28 (cr=612 pr=0 pw=0 time=138984 us)
+   4070     TABLE ACCESS FULL COSTS PARTITION: 1 28 (cr=612 pr=0 pw=0 time=84055 us)
+
+********************************************************************************
+
+insert into costs
+select prod_id, '01-May-1999', 999, 5, prod_min_price, prod_list_price
+  from products
+ where prod_id not in (select prod_id from costs)
+   and prod_category='Photo'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0         29         23          10
+Fetch        0      0.00       0.00          0          0          0           0
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        2      0.00       0.00          0         29         23          10
+
+Misses in library cache during parse: 0
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+     10  NESTED LOOPS ANTI (cr=26 pr=0 pw=0 time=1503 us)
+     20   TABLE ACCESS BY INDEX ROWID PRODUCTS (cr=4 pr=0 pw=0 time=627 us)
+     20    INDEX RANGE SCAN PRODUCTS_PROD_CAT_IX (cr=1 pr=0 pw=0 time=297 us)(object id 54741)
+     10   INDEX RANGE SCAN COSTS_PK (cr=22 pr=0 pw=0 time=684 us)(object id 54737)
+

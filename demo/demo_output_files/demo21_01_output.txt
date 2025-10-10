@@ -1,0 +1,26 @@
+select sum(s.quantity_sold)
+  from sales s, products p
+ where s.prod_id = p.prod_id
+   and p.prod_subcategory = 'CD-ROM'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.05       0.05          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      1.46       1.45          2       1613          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      1.51       1.50          2       1613          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=1613 pr=2 pw=0 time=1450183 us)
+  82817   HASH JOIN  (cr=1613 pr=2 pw=0 time=1840273 us)
+      6    TABLE ACCESS BY INDEX ROWID PRODUCTS (cr=2 pr=0 pw=0 time=509 us)
+      6     INDEX RANGE SCAN PRODUCTS_PROD_SUBCAT_IX (cr=1 pr=0 pw=0 time=117 us)(object id 54740)
+ 918843    PARTITION RANGE ALL PARTITION: 1 28 (cr=1611 pr=2 pw=0 time=19296147 us)
+ 918843     TABLE ACCESS FULL SALES PARTITION: 1 28 (cr=1611 pr=2 pw=0 time=8272112 us)
+

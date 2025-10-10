@@ -1,0 +1,45 @@
+select day_name
+from
+ times where time_id='07-FEB-99'
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.00       0.00          0          3          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.00       0.00          0          3          0           1
+
+Misses in library cache during parse: 0
+Optimizer mode: ALL_ROWS
+Parsing user id: 66
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  TABLE ACCESS BY INDEX ROWID TIMES (cr=3 pr=0 pw=0 time=177 us)
+      1   INDEX UNIQUE SCAN TIMES_PK (cr=2 pr=0 pw=0 time=123 us)(object id 54685)
+
+********************************************************************************
+
+select day_name
+from
+ times where time_id=to_date('07-FEB-99','DD-MON-RR')
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.00       0.00          0          3          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.00       0.00          0          3          0           1
+
+Misses in library cache during parse: 0
+Optimizer mode: ALL_ROWS
+Parsing user id: 66
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  TABLE ACCESS BY INDEX ROWID TIMES (cr=3 pr=0 pw=0 time=123 us)
+      1   INDEX UNIQUE SCAN TIMES_PK (cr=2 pr=0 pw=0 time=82 us)(object id 54685)

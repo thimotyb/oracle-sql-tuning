@@ -1,0 +1,101 @@
+;;; 
+Import: Release 11.2.0.1.0 - Production on Thu May 3 01:21:02 2012
+
+Copyright (c) 1982, 2009, Oracle and/or its affiliates.  All rights reserved.
+;;; 
+Connected to: Oracle Database 11g Enterprise Edition Release 11.2.0.1.0 - Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+Master table "SYSTEM"."SYS_IMPORT_FULL_02" successfully loaded/unloaded
+Starting "SYSTEM"."SYS_IMPORT_FULL_02":  system/******** directory=sh_dir dumpfile=sh.dmp logfile=shimp_log remap_schema=sh:sqlt remap_tablespace=example:sqlt table_exists_action=replace 
+Processing object type SCHEMA_EXPORT/USER
+ORA-31684: Object type USER:"SQLT" already exists
+Processing object type SCHEMA_EXPORT/SYSTEM_GRANT
+Processing object type SCHEMA_EXPORT/ROLE_GRANT
+Processing object type SCHEMA_EXPORT/DEFAULT_ROLE
+Processing object type SCHEMA_EXPORT/PRE_SCHEMA/PROCACT_SCHEMA
+Processing object type SCHEMA_EXPORT/SEQUENCE/SEQUENCE
+Processing object type SCHEMA_EXPORT/TABLE/TABLE
+Processing object type SCHEMA_EXPORT/TABLE/TABLE_DATA
+. . imported "SQLT"."CUSTOMERS"                          9.853 MB   55500 rows
+. . imported "SQLT"."SUPPLEMENTARY_DEMOGRAPHICS"         697.3 KB    4500 rows
+. . imported "SQLT"."SALES":"SALES_Q4_2001"              2.257 MB   69749 rows
+. . imported "SQLT"."SALES":"SALES_Q1_1999"              2.071 MB   64186 rows
+. . imported "SQLT"."SALES":"SALES_Q3_2001"              2.130 MB   65769 rows
+. . imported "SQLT"."SALES":"SALES_Q1_2000"              2.012 MB   62197 rows
+. . imported "SQLT"."SALES":"SALES_Q1_2001"              1.965 MB   60608 rows
+. . imported "SQLT"."SALES":"SALES_Q2_2001"              2.051 MB   63292 rows
+. . imported "SQLT"."SALES":"SALES_Q3_1999"              2.166 MB   67138 rows
+. . imported "SQLT"."SALES":"SALES_Q4_1999"              2.014 MB   62388 rows
+. . imported "SQLT"."SYS_EXPORT_SCHEMA_01"               710.6 KB    1238 rows
+. . imported "SQLT"."SALES":"SALES_Q2_2000"              1.802 MB   55515 rows
+. . imported "SQLT"."SALES":"SALES_Q3_2000"              1.909 MB   58950 rows
+. . imported "SQLT"."SALES":"SALES_Q4_1998"              1.581 MB   48874 rows
+. . imported "SQLT"."SALES":"SALES_Q4_2000"              1.814 MB   55984 rows
+. . imported "SQLT"."SALES":"SALES_Q2_1999"              1.754 MB   54233 rows
+. . imported "SQLT"."SALES":"SALES_Q1_1998"              1.412 MB   43687 rows
+. . imported "SQLT"."SALES":"SALES_Q3_1998"              1.633 MB   50515 rows
+. . imported "SQLT"."SALES":"SALES_Q2_1998"              1.160 MB   35758 rows
+. . imported "SQLT"."FWEEK_PSCAT_SALES_MV"               419.8 KB   11266 rows
+. . imported "SQLT"."PROMOTIONS"                         58.89 KB     503 rows
+. . imported "SQLT"."TIMES"                              380.8 KB    1826 rows
+. . imported "SQLT"."PLAN_TABLE"                         141.8 KB     279 rows
+. . imported "SQLT"."COSTS":"COSTS_Q4_2001"              278.4 KB    9011 rows
+. . imported "SQLT"."COSTS":"COSTS_Q1_1999"              183.5 KB    5884 rows
+. . imported "SQLT"."COSTS":"COSTS_Q1_2001"              227.8 KB    7328 rows
+. . imported "SQLT"."COSTS":"COSTS_Q2_2001"              184.5 KB    5882 rows
+. . imported "SQLT"."COSTS":"COSTS_Q3_2001"              234.4 KB    7545 rows
+. . imported "SQLT"."COSTS":"COSTS_Q1_1998"              139.5 KB    4411 rows
+. . imported "SQLT"."COSTS":"COSTS_Q1_2000"              120.6 KB    3772 rows
+. . imported "SQLT"."COSTS":"COSTS_Q2_1998"              79.52 KB    2397 rows
+. . imported "SQLT"."COSTS":"COSTS_Q2_1999"              132.5 KB    4179 rows
+. . imported "SQLT"."COSTS":"COSTS_Q2_2000"              119.0 KB    3715 rows
+. . imported "SQLT"."COSTS":"COSTS_Q3_1998"              131.1 KB    4129 rows
+. . imported "SQLT"."COSTS":"COSTS_Q3_1999"              137.3 KB    4336 rows
+. . imported "SQLT"."COSTS":"COSTS_Q3_2000"              151.4 KB    4798 rows
+. . imported "SQLT"."COSTS":"COSTS_Q4_1998"              144.7 KB    4577 rows
+. . imported "SQLT"."COSTS":"COSTS_Q4_1999"              159.0 KB    5060 rows
+. . imported "SQLT"."COSTS":"COSTS_Q4_2000"              160.2 KB    5088 rows
+. . imported "SQLT"."CAL_MONTH_SALES_MV"                 6.312 KB      48 rows
+. . imported "SQLT"."CHANNELS"                            7.25 KB       5 rows
+. . imported "SQLT"."COUNTRIES"                          10.20 KB      23 rows
+. . imported "SQLT"."PROD1"                              26.17 KB      72 rows
+. . imported "SQLT"."PRODUCTS"                           26.18 KB      72 rows
+. . imported "SQLT"."COSTS":"COSTS_1995"                     0 KB       0 rows
+. . imported "SQLT"."COSTS":"COSTS_1996"                     0 KB       0 rows
+. . imported "SQLT"."COSTS":"COSTS_H1_1997"                  0 KB       0 rows
+. . imported "SQLT"."COSTS":"COSTS_H2_1997"                  0 KB       0 rows
+. . imported "SQLT"."COSTS":"COSTS_Q1_2002"                  0 KB       0 rows
+. . imported "SQLT"."COSTS":"COSTS_Q1_2003"                  0 KB       0 rows
+. . imported "SQLT"."COSTS":"COSTS_Q2_2002"                  0 KB       0 rows
+. . imported "SQLT"."COSTS":"COSTS_Q2_2003"                  0 KB       0 rows
+. . imported "SQLT"."COSTS":"COSTS_Q3_2002"                  0 KB       0 rows
+. . imported "SQLT"."COSTS":"COSTS_Q3_2003"                  0 KB       0 rows
+. . imported "SQLT"."COSTS":"COSTS_Q4_2002"                  0 KB       0 rows
+. . imported "SQLT"."COSTS":"COSTS_Q4_2003"                  0 KB       0 rows
+. . imported "SQLT"."DIMENSION_EXCEPTIONS"                   0 KB       0 rows
+. . imported "SQLT"."SALES":"SALES_1995"                     0 KB       0 rows
+. . imported "SQLT"."SALES":"SALES_1996"                     0 KB       0 rows
+. . imported "SQLT"."SALES":"SALES_H1_1997"                  0 KB       0 rows
+. . imported "SQLT"."SALES":"SALES_H2_1997"                  0 KB       0 rows
+. . imported "SQLT"."SALES":"SALES_Q1_2002"                  0 KB       0 rows
+. . imported "SQLT"."SALES":"SALES_Q1_2003"                  0 KB       0 rows
+. . imported "SQLT"."SALES":"SALES_Q2_2002"                  0 KB       0 rows
+. . imported "SQLT"."SALES":"SALES_Q2_2003"                  0 KB       0 rows
+. . imported "SQLT"."SALES":"SALES_Q3_2002"                  0 KB       0 rows
+. . imported "SQLT"."SALES":"SALES_Q3_2003"                  0 KB       0 rows
+. . imported "SQLT"."SALES":"SALES_Q4_2002"                  0 KB       0 rows
+. . imported "SQLT"."SALES":"SALES_Q4_2003"                  0 KB       0 rows
+Processing object type SCHEMA_EXPORT/TABLE/GRANT/OWNER_GRANT/OBJECT_GRANT
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/INDEX
+Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/CONSTRAINT
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+Processing object type SCHEMA_EXPORT/TABLE/COMMENT
+Processing object type SCHEMA_EXPORT/VIEW/VIEW
+Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/REF_CONSTRAINT
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/FUNCTIONAL_AND_BITMAP/INDEX
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/FUNCTIONAL_AND_BITMAP/INDEX_STATISTICS
+Processing object type SCHEMA_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+Processing object type SCHEMA_EXPORT/TABLE/STATISTICS/USER_PREF_STATISTICS
+Processing object type SCHEMA_EXPORT/MATERIALIZED_VIEW
+Processing object type SCHEMA_EXPORT/DIMENSION
+Job "SYSTEM"."SYS_IMPORT_FULL_02" completed with 1 error(s) at 01:21:35

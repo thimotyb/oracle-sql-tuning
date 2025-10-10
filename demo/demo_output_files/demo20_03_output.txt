@@ -1,0 +1,21 @@
+select count(*) from customers
+ where country_id > 52000
+   and cust_state_province = 'CA'
+   and cust_city = 'Belmont'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.00       0.00          2          3          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.00       0.00          2          3          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=3 pr=2 pw=0 time=545 us)
+     30   INDEX RANGE SCAN CUST_CITY_STATE_COUNTRY_IX (cr=3 pr=2 pw=0 time=648 us)(object id 56233)

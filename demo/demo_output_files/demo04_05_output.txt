@@ -1,0 +1,51 @@
+
+select day_name 
+from
+ times where time_id='1999-02-07'
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.00       0.00          0          3          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.00       0.00          0          3          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 131  
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  TABLE ACCESS BY INDEX ROWID TIMES (cr=3 pr=0 pw=0 time=0 us cost=2 size=17 card=1)
+      1   INDEX UNIQUE SCAN TIMES_PK (cr=2 pr=0 pw=0 time=0 us cost=1 size=0 card=1)(object id 89358)
+
+
+********************************************************************************
+
+
+select day_name 
+from
+ times where time_id=to_date('1999-02-07','YYYY-MM-DD')
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.00       0.00          0          3          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.00       0.00          0          3          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 131  
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  TABLE ACCESS BY INDEX ROWID TIMES (cr=3 pr=0 pw=0 time=0 us cost=2 size=17 card=1)
+      1   INDEX UNIQUE SCAN TIMES_PK (cr=2 pr=0 pw=0 time=0 us cost=1 size=0 card=1)(object id 89358)
+
+
+

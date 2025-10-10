@@ -1,0 +1,122 @@
+select sum(amount_sold)
+  from sales s, times t, customers c
+ where s.time_id  = t.time_id
+   and s.cust_id  = c.cust_id
+   and t.day_name = 'Friday'
+   and country_id = 52772
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.01       0.01          0          0          0           0
+Execute      1      0.00       0.01          0          0          0           0
+Fetch        2      1.72       1.90        260       1785          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      1.74       1.93        260       1785          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=1840 pr=260 pw=0 time=1911494 us)
+   3357   HASH JOIN  (cr=1840 pr=260 pw=0 time=2341542 us)
+   2010    VIEW  index$_join$_003 (cr=134 pr=0 pw=0 time=111007 us)
+   2010     HASH JOIN  (cr=134 pr=0 pw=0 time=82845 us)
+   2010      INDEX RANGE SCAN CUST_COUNTRY_STATE_CITY_IX (cr=12 pr=0 pw=0 time=18291 us)(object id 56234)
+  55500      INDEX FAST FULL SCAN CUSTOMERS_PK (cr=122 pr=0 pw=0 time=499735 us)(object id 54744)
+ 129805    HASH JOIN  (cr=1706 pr=260 pw=0 time=2538655 us)
+    261     TABLE ACCESS FULL TIMES (cr=56 pr=53 pw=0 time=18366 us)
+ 918843     PARTITION RANGE SUBQUERY PARTITION: KEY(SUBQUERY) KEY(SUBQUERY) (cr=1650 pr=207 pw=0 time=20240973 us)
+ 918843      TABLE ACCESS FULL SALES PARTITION: KEY(SUBQUERY) KEY(SUBQUERY) (cr=1595 pr=207 pw=0 time=8289610 us)
+
+********************************************************************************
+
+SELECT distinct TBL$OR$IDX$PART$NUM("SALES", 0, 1, 0, "TIME_ID")
+FROM
+ (SELECT "T"."TIME_ID" "TIME_ID" FROM "TIMES" "T" WHERE "T"."DAY_NAME"=
+  'Friday') ORDER BY 1
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        3      0.00       0.00          0          0          0           0
+Execute      3      0.00       0.00          0          0          0           0
+Fetch       63      0.00       0.00          0        165          0          60
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       69      0.01       0.01          0        165          0          60
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65     (recursive depth: 1)
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+     20  SORT UNIQUE (cr=55 pr=0 pw=0 time=2907 us)
+    261   TABLE ACCESS FULL TIMES (cr=55 pr=0 pw=0 time=10859 us)
+
+********************************************************************************
+
+select sum(amount_sold)
+  from sales s, times t, products p
+ where s.time_id  = t.time_id
+   and s.prod_id  = p.prod_id
+   and t.day_name = 'Friday'
+   and prod_category = 'Electronics'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.01          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      1.64       1.63          1       1654          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      1.65       1.64          1       1654          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=1709 pr=1 pw=0 time=1637484 us)
+  15091   HASH JOIN  (cr=1709 pr=1 pw=0 time=257228 us)
+    261    TABLE ACCESS FULL TIMES (cr=56 pr=0 pw=0 time=3110 us)
+ 116267    HASH JOIN  (cr=1653 pr=1 pw=0 time=1188485 us)
+     13     VIEW  index$_join$_003 (cr=4 pr=1 pw=0 time=13297 us)
+     13      HASH JOIN  (cr=4 pr=1 pw=0 time=13057 us)
+     13       INDEX RANGE SCAN PRODUCTS_PROD_CAT_IX (cr=1 pr=1 pw=0 time=8346 us)(object id 54741)
+     72       INDEX FAST FULL SCAN PRODUCTS_PK (cr=3 pr=0 pw=0 time=867 us)(object id 54739)
+ 918843     PARTITION RANGE SUBQUERY PARTITION: KEY(SUBQUERY) KEY(SUBQUERY) (cr=1649 pr=0 pw=0 time=19300162 us)
+ 918843      TABLE ACCESS FULL SALES PARTITION: KEY(SUBQUERY) KEY(SUBQUERY) (cr=1594 pr=0 pw=0 time=8271599 us)
+
+********************************************************************************
+
+select sum(amount_sold)
+  from sales s, times t, promotions p
+ where s.time_id  = t.time_id
+   and s.promo_id = p.promo_id
+   and t.day_name = 'Friday'
+   and promo_category= 'TV'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      1.60       1.61          9       1660          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      1.61       1.62          9       1660          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=1715 pr=9 pw=0 time=1620675 us)
+   1392   HASH JOIN  (cr=1715 pr=9 pw=0 time=1198074 us)
+    115    TABLE ACCESS FULL PROMOTIONS (cr=11 pr=9 pw=0 time=10284 us)
+ 129805    HASH JOIN  (cr=1704 pr=0 pw=0 time=2477436 us)
+    261     TABLE ACCESS FULL TIMES (cr=56 pr=0 pw=0 time=3059 us)
+ 918843     PARTITION RANGE SUBQUERY PARTITION: KEY(SUBQUERY) KEY(SUBQUERY) (cr=1648 pr=0 pw=0 time=20219024 us)
+ 918843      TABLE ACCESS FULL SALES PARTITION: KEY(SUBQUERY) KEY(SUBQUERY) (cr=1593 pr=0 pw=0 time=8271487 us)
+

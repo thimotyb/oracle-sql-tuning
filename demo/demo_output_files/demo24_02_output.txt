@@ -1,0 +1,22 @@
+insert all
+when cust_marital_status='single'  then into cust_single
+when cust_marital_status='married' then into cust_married
+select * from customers
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.77       0.84       1452       3210       6653       33347
+Fetch        0      0.00       0.00          0          0          0           0
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        2      0.77       0.84       1452       3210       6653       33347
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  MULTI-TABLE INSERT  (cr=3208 pr=1452 pw=0 time=825906 us)
+  55500   TABLE ACCESS FULL CUSTOMERS (cr=1457 pr=1452 pw=0 time=1221565 us)
+

@@ -1,0 +1,101 @@
+
+update costs_np set unit_price = unit_price * 0.5
+where
+ time_id between to_date('19980101', 'yyyymmdd') and to_date('19981231',
+  'yyyymmdd')
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.03       0.05          2          2          0           0
+Execute      1      0.28       0.34        123        366       1753       15514
+Fetch        0      0.00       0.00          0          0          0           0
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        2      0.32       0.39        125        368       1753       15514
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      0  UPDATE  COSTS_NP (cr=366 pr=123 pw=0 time=348925 us)
+  15514   TABLE ACCESS FULL COSTS_NP (cr=366 pr=122 pw=0 time=170824 us)
+
+********************************************************************************
+
+rollback
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.12       0.14          4         30       8854           0
+Fetch        0      0.00       0.00          0          0          0           0
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        2      0.12       0.14          4         30       8854           0
+
+Misses in library cache during parse: 0
+Parsing user id: 65
+********************************************************************************
+
+update costs set unit_price = unit_price * 0.5
+where
+ time_id between to_date('19980101', 'yyyymmdd') and to_date('19981231',
+  'yyyymmdd')
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.01       0.05          0          0          0           0
+Execute      1      5.17       5.35         96      21488      69517       15514
+Fetch        0      0.00       0.00          0          0          0           0
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        2      5.18       5.40         96      21488      69517       15514
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      0  UPDATE  COSTS (cr=21500 pr=96 pw=0 time=5355845 us)
+  15514   PARTITION RANGE ITERATOR PARTITION: 5 8 (cr=7802 pr=14 pw=0 time=868923 us)
+  15514    TABLE ACCESS FULL COSTS PARTITION: 5 8 (cr=7802 pr=14 pw=0 time=617119 us)
+
+********************************************************************************
+
+update /*+ parallel(costs, 4)*/ costs set unit_price = unit_price * 0.5
+where
+ time_id between to_date('19980101', 'yyyymmdd') and to_date('19981231',
+  'yyyymmdd')
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.01       0.01          0          0          0           0
+Execute      1      0.11       6.11          0         24          2       15514
+Fetch        0      0.00       0.00          0          0          0           0
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        2      0.12       6.12          0         24          2       15514
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      3  PX COORDINATOR  (cr=24 pr=0 pw=0 time=6070820 us)
+      0   PX SEND QC (RANDOM) :TQ10001 (cr=0 pr=0 pw=0 time=0 us)
+      0    INDEX MAINTENANCE  COSTS (cr=0 pr=0 pw=0 time=0 us)(object id 0)
+      0     PX RECEIVE  (cr=0 pr=0 pw=0 time=0 us)
+      0      PX SEND RANGE :TQ10000 (cr=0 pr=0 pw=0 time=0 us)
+      0       UPDATE  COSTS (cr=0 pr=0 pw=0 time=0 us)
+      0        PX BLOCK ITERATOR PARTITION: 5 8 (cr=0 pr=0 pw=0 time=0 us)
+      0         TABLE ACCESS FULL COSTS PARTITION: 5 8 (cr=0 pr=0 pw=0 time=0 us)
+
+********************************************************************************
+
+
+
+

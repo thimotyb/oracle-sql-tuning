@@ -1,0 +1,25 @@
+select /*+ index(s sales_cust_id_ix) */ cust_state_province, sum(s.amount_sold) 
+  from sales s, customers c
+ where s.cust_id = c.cust_id 
+   and c.cust_year_of_birth= 1988 
+ group bycust_state_province
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.01       0.01          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.19       1.12       1609       2894          0          14
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.20       1.13       1609       2894          0          14
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+     14  HASH GROUP BY (cr=2894 pr=1609 pw=0 time=1124680 us)
+   1903   TABLE ACCESS BY GLOBAL INDEX ROWID SALES PARTITION: ROW LOCATION ROW LOCATION (cr=2894 pr=1609 pw=0 time=4723196 us)
+   1986    NESTED LOOPS  (cr=1626 pr=1522 pw=0 time=7003260 us)
+     82     TABLE ACCESS FULL CUSTOMERS (cr=1457 pr=1452 pw=0 time=1050119 us)
+   1903     INDEX RANGE SCAN SALES_CUST_ID_IX (cr=169 pr=70 pw=0 time=66313 us)(object id 57046)

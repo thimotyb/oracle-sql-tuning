@@ -1,0 +1,25 @@
+select cust_state_province, sum(s.amount_sold) 
+  from sales s, customers c
+ where s.cust_id = c.cust_id 
+   and c.cust_year_of_birth= 1988 
+ group by cust_state_province
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.01       0.01          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      2.16       2.46       8104      10558          0          14
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      2.18       2.47       8104      10558          0          14
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+     14  HASH GROUP BY (cr=10558 pr=8104 pw=0 time=2462605 us)
+   1903   HASH JOIN  (cr=10558 pr=8104 pw=0 time=2342695 us)
+     82    TABLE ACCESS FULL CUSTOMERS (cr=1457 pr=495 pw=0 time=1452555 us)
+ 918843    PARTITION RANGE ALL PARTITION: 1 28 (cr=9101 pr=7609 pw=0 time=21133756 us)
+ 918843     TABLE ACCESS FULL SALES PARTITION: 1 28 (cr=9101 pr=7609 pw=0 time=8272296 us)

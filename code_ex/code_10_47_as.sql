@@ -1,0 +1,3 @@
+--Use the sh schema to execute the SQL statement in SQL Developer
+
+exec dbms_stats.set_table_prefs('SH','CUSTOMERS','PUBLISH','false');

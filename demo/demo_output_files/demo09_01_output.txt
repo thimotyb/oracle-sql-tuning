@@ -1,0 +1,33 @@
+SELECT department_id, last_name, salary 
+FROM employees e1 
+WHERE salary > (SELECT AVG(salary) 
+                FROM employees e2
+                WHERE e1.department_id = e2.department_id
+                GROUP BY e2.department_id) 
+ORDER BY department_id
+/
+
+alter session set sql_trace=false;
+
+********************************************************************************
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.01       0.01          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        4      0.00       0.02          7         13          0          38
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        6      0.02       0.04          7         13          0          38
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 84
+Number of plan statistics captured: 1
+
+Rows (1st) Rows (avg) Rows (max)  Row Source Operation
+---------- ---------- ----------  ---------------------------------------------------
+        38         38         38  SORT ORDER BY (cr=13 pr=7 pw=0 time=26489 us・)
+        38         38         38   FILTER  (cr=13 pr=7 pw=0 time=39567 us)
+       107        107        107    TABLE ACCESS FULL EMPLOYEES (cr=6 pr=6 pw=0・)
+        11         11         11    SORT GROUP BY NOSORT (cr=7 pr=1 pw=0 ・)
+       106        106        106     TABLE ACCESS BY INDEX ROWID EMPLOYEES (cr=7・)
+       106        106        106      INDEX RANGE SCAN EMP_DEPARTMENT_IX (cr=3・)
+

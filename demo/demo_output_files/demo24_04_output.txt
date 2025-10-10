@@ -1,0 +1,38 @@
+merge into costs C using (select * from products where prod_category='Photo') P
+on (C.prod_id = P.prod_id)
+when matched then
+  update set C.unit_price = P.prod_list_price where C.unit_cost > 80
+  delete where C.channel_id = 4
+when not matched then
+  insert (prod_id, time_id, promo_id, channel_id, unit_cost, unit_price)
+  values (P.prod_id, '01-May-1999', 999, 5, P.prod_min_price, P.prod_list_price)
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.69       0.69          0        966       6231        1679
+Fetch        0      0.00       0.00          0          0          0           0
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        2      0.69       0.69          0        966       6231        1679
+
+Misses in library cache during parse: 0
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      3  MERGE  COSTS (cr=966 pr=0 pw=0 time=692236 us)
+   6443   VIEW  (cr=721 pr=0 pw=0 time=360923 us)
+   6443    HASH JOIN OUTER (cr=721 pr=0 pw=0 time=264260 us)
+     20     TABLE ACCESS BY INDEX ROWID PRODUCTS (cr=4 pr=0 pw=0 time=1068 us)
+     20      INDEX RANGE SCAN PRODUCTS_PROD_CAT_IX (cr=1 pr=0 pw=0 time=581 us)(object id 54741)
+  82112     PARTITION RANGE ALL PARTITION: 1 28 (cr=717 pr=0 pw=0 time=1889692 us)
+  82112      TABLE ACCESS FULL COSTS PARTITION: 1 28 (cr=717 pr=0 pw=0 time=824359 us)
+
+
+
+
+
+
+
+

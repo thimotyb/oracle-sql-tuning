@@ -1,0 +1,44 @@
+
+insert into cust_single
+select * from customers where cust_marital_status='single'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.02       0.02          0          0          0           0
+Execute      1      0.51       0.58       1452       2172       5201       19094
+Fetch        0      0.00       0.00          0          0          0           0
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        2      0.54       0.60       1452       2172       5201       19094
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+  19094  TABLE ACCESS FULL CUSTOMERS (cr=1457 pr=1452 pw=0 time=210590 us)
+
+
+
+insert into cust_married
+select * from customers where cust_marital_status='married'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.02       0.02          0          0          0           0
+Execute      1      0.40       0.43       1010       2013       4059       14253
+Fetch        0      0.00       0.00          0          0          0           0
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        2      0.43       0.45       1010       2013       4059       14253
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+  14253  TABLE ACCESS FULL CUSTOMERS (cr=1457 pr=1009 pw=0 time=384985 us)
+
+
+
+

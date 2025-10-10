@@ -1,0 +1,120 @@
+select sum(amount_sold)
+  from sales
+ where prod_id between 20 and 150
+   and cust_id between 10000 and 20000
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      1.22       1.22       8672       9101          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      1.23       1.23       8672       9101          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=9101 pr=8672 pw=0 time=1225829 us)
+ 124233   PARTITION RANGE ALL PARTITION: 1 28 (cr=9101 pr=8672 pw=0 time=3108934 us)
+ 124233    TABLE ACCESS FULL SALES PARTITION: 1 28 (cr=9101 pr=8672 pw=0 time=1512161 us)
+
+********************************************************************************
+
+select /*+ index(s sales_pk) */ sum(amount_sold)
+  from sales s
+ where prod_id between 20 and 150
+   and cust_id between 10000 and 20000
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      2.17       2.50       4887      97039          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      2.18       2.51       4887      97039          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=97039 pr=4887 pw=0 time=2508791 us)
+ 124233   TABLE ACCESS BY GLOBAL INDEX ROWID SALES PARTITION: ROW LOCATION ROW LOCATION (cr=97039 pr=4887 pw=0 time=5987328 us)
+ 124233    INDEX RANGE SCAN SALES_PK (cr=4401 pr=3471 pw=0 time=1289240 us)(object id 54736)
+
+********************************************************************************
+
+select sum(amount_sold)
+  from products p, sales s
+ where s.prod_id = p.prod_id
+   and p.prod_id between 20 and 150
+   and s.cust_id between 10000 and 20000
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      1.38       1.40       8355       9102          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      1.39       1.41       8355       9102          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=9102 pr=8355 pw=0 time=1403746 us)
+ 124233   HASH JOIN  (cr=9102 pr=8355 pw=0 time=6467591 us)
+     65    INDEX RANGE SCAN PRODUCTS_PK (cr=1 pr=0 pw=0 time=1080 us)(object id 54739)
+ 124233    PARTITION RANGE ALL PARTITION: 1 28 (cr=9101 pr=8355 pw=0 time=3231781 us)
+ 124233     TABLE ACCESS FULL SALES PARTITION: 1 28 (cr=9101 pr=8355 pw=0 time=1634782 us)
+
+********************************************************************************
+
+select /*+ ordered use_nl(p s) */ sum(amount_sold)
+  from products p, sales s
+ where s.prod_id = p.prod_id
+   and p.prod_id between 20 and 150
+   and s.cust_id between 10000 and 20000
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      1.61       1.64       1248      93419          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      1.62       1.65       1248      93419          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=93419 pr=1248 pw=0 time=1648383 us)
+ 124233   TABLE ACCESS BY GLOBAL INDEX ROWID SALES PARTITION: ROW LOCATION ROW LOCATION (cr=93419 pr=1248 pw=0 time=6336518 us)
+ 124299    NESTED LOOPS  (cr=781 pr=442 pw=0 time=1376822 us)
+     65     INDEX RANGE SCAN PRODUCTS_PK (cr=1 pr=0 pw=0 time=1051 us)(object id 54739)
+ 124233     INDEX RANGE SCAN SALES_PK (cr=780 pr=442 pw=0 time=1179144 us)(object id 54736)
+
+********************************************************************************
+
+alter session set sql_trace = false
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        0      0.00       0.00          0          0          0           0
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        2      0.00       0.00          0          0          0           0
+
+Misses in library cache during parse: 0
+Optimizer mode: ALL_ROWS
+Parsing user id: 65

@@ -1,0 +1,16 @@
+INSERT ALL
+INTO sales VALUES (product_id, customer_id, today, 3,
+promotion_id, quantity_per_day, amount_per_day)
+INTO costs VALUES (product_id, today, promotion_id, 3,
+product_cost, product_price)
+SELECT TRUNC(s.sales_date) AS today, s.product_id,
+s.customer_id, s.promotion_id, SUM(s.amount)
+AS amount_per_day, SUM(s.quantity) quantity_per_day,
+p.prod_min_price*0.8 AS product_cost,
+p.prod_list_price AS product_price
+FROM sales_activity_direct s, products p
+WHERE s.product_id = p.prod_id AND TRUNC(sales_date) =
+TRUNC(SYSDATE)
+GROUP BY TRUNC(sales_date), s.product_id, s.customer_id,
+s.promotion_id, p.prod_min_price*0.8,
+p.prod_list_price;

@@ -1,0 +1,28 @@
+
+select * from categories where prod_category_id = 202 order by 1,2;
+
+PROD_CATEGORY_ID PROD_SUBCAT_SEQ PROD_SUBCATEGORY
+---------------- --------------- --------------------------------------------------
+             202               1 Desktop PCs
+             202               2 Portable PCs
+
+call register_subcat(202, 'PMP');
+
+select * from categories where prod_category_id = 202 order by 1,2;
+
+PROD_CATEGORY_ID PROD_SUBCAT_SEQ PROD_SUBCATEGORY
+---------------- --------------- --------------------------------------------------
+             202               1 Desktop PCs
+             202               2 Portable PCs
+             202               3 PMP
+
+call register_subcat_new(202, 'Laptop');
+
+select * from categories where prod_category_id = 202 order by 1,2;
+
+PROD_CATEGORY_ID PROD_SUBCAT_SEQ PROD_SUBCATEGORY
+---------------- --------------- --------------------------------------------------
+             202               1 Desktop PCs
+             202               2 Portable PCs
+             202               3 PMP
+             202               4 Laptop

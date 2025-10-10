@@ -1,0 +1,26 @@
+
+select /*+ index(s sales_subcat_bjix) */ sum(s.quantity_sold)
+  from sales s, products p
+ where s.prod_id = p.prod_id
+   and p.prod_subcategory = 'CD-ROM'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.02          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.19       0.20         15        237          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.20       0.22         15        237          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=237 pr=15 pw=0 time=205531 us)
+  82817   PARTITION RANGE ALL PARTITION: 1 28 (cr=237 pr=15 pw=0 time=2905501 us)
+  82817    TABLE ACCESS BY LOCAL INDEX ROWID SALES PARTITION: 1 28 (cr=237 pr=15 pw=0 time=1916614 us)
+  82817     BITMAP CONVERSION TO ROWIDS (cr=43 pr=15 pw=0 time=756109 us)
+     16      BITMAP INDEX SINGLE VALUE SALES_SUBCAT_BJIX PARTITION: 1 28 (cr=43 pr=15 pw=0 time=4477 us)(object id 56602)
+

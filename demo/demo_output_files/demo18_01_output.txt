@@ -1,0 +1,42 @@
+select prod_id, time_id, promo_id, channel_id, unit_cost
+  from costs
+ where prod_id = 120
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.03       0.03          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch      133      0.06       0.06          0        743          0        1974
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total      135      0.10       0.10          0        743          0        1974
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+   1974  PARTITION RANGE ALL PARTITION: 1 28 (cr=743 pr=0 pw=0 time=91505 us)
+   1974   TABLE ACCESS FULL COSTS PARTITION: 1 28 (cr=743 pr=0 pw=0 time=47925 us)
+
+********************************************************************************
+
+select prod_id, time_id, promo_id, channel_id, unit_cost
+  from costs
+ where prod_id = 120
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.01       0.01          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch      133      0.03       0.02         13        144          0        1974
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total      135      0.04       0.03         13        144          0        1974
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+   1974  INDEX RANGE SCAN COSTS_TEST_IX (cr=144 pr=13 pw=0 time=26066 us)(object id 57163)

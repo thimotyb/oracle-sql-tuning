@@ -1,0 +1,51 @@
+select /*+star_transformation fact(s)*/
+       s.amount_sold,p.prod_name,ch.channel_desc
+  from sales s, products p, channels ch, customers c
+ where s.prod_id=p.prod_id
+   and s.channel_id=ch.channel_id
+   and s.cust_id=c.cust_id
+   and ch.channel_id in (3, 4)
+   and c.cust_city='Asten'
+   and p.prod_id>100
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.05       0.08          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch       53      0.48       0.48        389       7811          0         778
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       55      0.54       0.57        389       7811          0         778
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+    778  HASH JOIN  (cr=7811 pr=389 pw=0 time=491080 us)
+    778   HASH JOIN  (cr=7805 pr=389 pw=0 time=134044 us)
+     36    TABLE ACCESS BY INDEX ROWID PRODUCTS (cr=3 pr=0 pw=0 time=1619 us)
+     36     INDEX RANGE SCAN PRODUCTS_PK (cr=1 pr=0 pw=0 time=162 us)(object id 54739)
+    778    PARTITION RANGE ALL PARTITION: 1 28 (cr=7802 pr=389 pw=0 time=108019 us)
+    778     TABLE ACCESS BY LOCAL INDEX ROWID SALES PARTITION: 1 28 (cr=7802 pr=389 pw=0 time=483840 us)
+   1103      BITMAP CONVERSION TO ROWIDS (cr=7258 pr=389 pw=0 time=467001 us)
+     16       BITMAP AND  (cr=7258 pr=389 pw=0 time=456442 us)
+     16        BITMAP MERGE  (cr=6614 pr=356 pw=0 time=407987 us)
+     76         BITMAP KEY ITERATION  (cr=6614 pr=356 pw=0 time=445114 us)
+  10556          BUFFER SORT (cr=462 pr=0 pw=0 time=118944 us)
+    377           TABLE ACCESS BY INDEX ROWID CUSTOMERS (cr=462 pr=0 pw=0 time=19143 us)
+    377            INDEX SKIP SCAN CUST_COUNTRY_STATE_CITY_IX (cr=120 pr=0 pw=0 time=4776 us)(object id 56234)
+     76          BITMAP INDEX RANGE SCAN SALES_CUST_BIX PARTITION: 1 28 (cr=6152 pr=356 pw=0 time=270792 us)(object id 56335)
+     16        BITMAP MERGE  (cr=644 pr=33 pw=0 time=46312 us)
+    509         BITMAP KEY ITERATION  (cr=644 pr=33 pw=0 time=56043 us)
+    576          BUFFER SORT (cr=3 pr=0 pw=0 time=8937 us)
+     36           TABLE ACCESS BY INDEX ROWID PRODUCTS (cr=3 pr=0 pw=0 time=1085 us)
+     36            INDEX RANGE SCAN PRODUCTS_PK (cr=1 pr=0 pw=0 time=479 us)(object id 54739)
+    509          BITMAP INDEX RANGE SCAN SALES_PROD_BIX PARTITION: 1 28 (cr=641 pr=33 pw=0 time=26971 us)(object id 56364)
+      2   INLIST ITERATOR  (cr=6 pr=0 pw=0 time=315 us)
+      2    TABLE ACCESS BY INDEX ROWID CHANNELS (cr=6 pr=0 pw=0 time=451 us)
+      2     INDEX RANGE SCAN CHANNELS_PK (cr=4 pr=0 pw=0 time=221 us)(object id 54742)
+
+
+
+

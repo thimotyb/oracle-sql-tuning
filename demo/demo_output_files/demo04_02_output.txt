@@ -1,0 +1,68 @@
+select cust_street_address
+from
+ customers where cust_postal_code =  68054
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch       14      0.07       0.07       1448       1471          0         193
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       16      0.07       0.07       1448       1471          0         193
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 66
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+    193  TABLE ACCESS FULL CUSTOMERS (cr=1471 pr=1448 pw=0 time=147876 us)
+
+********************************************************************************
+
+select cust_street_address
+from
+ customers where cust_postal_code = '68054'
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch       14      0.00       0.00         31        192          0         193
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       16      0.00       0.00         31        192          0         193
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 66
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+    193  TABLE ACCESS BY INDEX ROWID CUSTOMERS (cr=192 pr=31 pw=0 time=6413 us)
+    193   INDEX RANGE SCAN CUST_POSTAL_CODE_IX (cr=15 pr=0 pw=0 time=1422 us)(object id 54948)
+    
+********************************************************************************
+
+select cust_street_address
+from
+ customers where cust_postal_code = to_char(68054)
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch       14      0.00       0.00          0        192          0         193
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       16      0.00       0.00          0        192          0         193
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+    193  TABLE ACCESS BY INDEX ROWID CUSTOMERS (cr=192 pr=0 pw=0 time=8137 us)
+    193   INDEX RANGE SCAN CUST_POSTAL_CODE_IX (cr=15 pr=0 pw=0 time=1859 us)(object id 54748)

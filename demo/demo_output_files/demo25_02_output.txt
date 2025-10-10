@@ -1,0 +1,147 @@
+
+SELECT /* OPT_DYN_SAMP */ /*+ ALL_ROWS IGNORE_WHERE_CLAUSE
+  NO_PARALLEL(SAMPLESUB) opt_param('parallel_execution_enabled', 'false')
+  NO_PARALLEL_INDEX(SAMPLESUB) NO_SQL_TUNE */ NVL(SUM(C1),:"SYS_B_0"),
+  NVL(SUM(C2),:"SYS_B_1"), COUNT(DISTINCT C3), NVL(SUM(CASE WHEN C3 IS NULL
+  THEN :"SYS_B_2" ELSE :"SYS_B_3" END),:"SYS_B_4")
+FROM
+ (SELECT /*+ NO_PARALLEL("S") FULL("S") NO_PARALLEL_INDEX("S") */ :"SYS_B_5"
+  AS C1, :"SYS_B_6" AS C2, "S"."CUST_ID" AS C3 FROM "SALES_FRIDAY" SAMPLE
+  BLOCK (:"SYS_B_7" , :"SYS_B_8") SEED (:"SYS_B_9") "S") SAMPLESUB
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        1      0.08       0.08        290         69          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        3      0.09       0.08        290         69          0           1
+
+Misses in library cache during parse: 1
+Misses in library cache during execute: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65     (recursive depth: 1)
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT GROUP BY (cr=69 pr=290 pw=0 time=83602 us)
+  22947   TABLE ACCESS SAMPLE SALES_FRIDAY (cr=69 pr=290 pw=0 time=208351 us)
+
+********************************************************************************
+
+select sum(amount_sold)
+  from sales_friday s, customers c
+ where s.cust_id  = c.cust_id
+   and country_id = 52772
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.01       0.00          0          3          1           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.21       0.21         83        510          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.22       0.22         83        513          1           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=510 pr=83 pw=0 time=215961 us)
+   3357   HASH JOIN  (cr=510 pr=83 pw=0 time=259068 us)
+   2010    VIEW  index$_join$_002 (cr=134 pr=0 pw=0 time=106353 us)
+   2010     HASH JOIN  (cr=134 pr=0 pw=0 time=80201 us)
+   2010      INDEX RANGE SCAN CUST_COUNTRY_STATE_CITY_IX (cr=12 pr=0 pw=0 time=18271 us)(object id 56234)
+  55500      INDEX FAST FULL SCAN CUSTOMERS_PK (cr=122 pr=0 pw=0 time=444222 us)(object id 54744)
+ 129805    TABLE ACCESS FULL SALES_FRIDAY (cr=376 pr=83 pw=0 time=1038835 us)
+
+********************************************************************************
+
+SELECT /* OPT_DYN_SAMP */ /*+ ALL_ROWS IGNORE_WHERE_CLAUSE
+  NO_PARALLEL(SAMPLESUB) opt_param('parallel_execution_enabled', 'false')
+  NO_PARALLEL_INDEX(SAMPLESUB) NO_SQL_TUNE */ NVL(SUM(C1),:"SYS_B_0"),
+  NVL(SUM(C2),:"SYS_B_1"), COUNT(DISTINCT C3), NVL(SUM(CASE WHEN C3 IS NULL
+  THEN :"SYS_B_2" ELSE :"SYS_B_3" END),:"SYS_B_4")
+FROM
+ (SELECT /*+ NO_PARALLEL("S") FULL("S") NO_PARALLEL_INDEX("S") */ :"SYS_B_5"
+  AS C1, :"SYS_B_6" AS C2, "S"."PROD_ID" AS C3 FROM "SALES_FRIDAY" SAMPLE
+  BLOCK (:"SYS_B_7" , :"SYS_B_8") SEED (:"SYS_B_9") "S") SAMPLESUB
+
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        1      0.03       0.03          0         69          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        3      0.04       0.04          0         69          0           1
+
+Misses in library cache during parse: 1
+Misses in library cache during execute: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65     (recursive depth: 1)
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT GROUP BY (cr=69 pr=0 pw=0 time=38653 us)
+  22947   TABLE ACCESS SAMPLE SALES_FRIDAY (cr=69 pr=0 pw=0 time=183767 us)
+
+********************************************************************************
+
+select sum(amount_sold)
+  from sales_friday s, products p
+ where s.prod_id  = p.prod_id
+   and prod_category = 'Electronics'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          1          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.13       0.13          0        380          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.14       0.14          0        381          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=380 pr=0 pw=0 time=137315 us)
+  15091   HASH JOIN  (cr=380 pr=0 pw=0 time=143667 us)
+     13    VIEW  index$_join$_002 (cr=4 pr=0 pw=0 time=4105 us)
+     13     HASH JOIN  (cr=4 pr=0 pw=0 time=3867 us)
+     13      INDEX RANGE SCAN PRODUCTS_PROD_CAT_IX (cr=1 pr=0 pw=0 time=288 us)(object id 54741)
+     72      INDEX FAST FULL SCAN PRODUCTS_PK (cr=3 pr=0 pw=0 time=959 us)(object id 54739)
+ 129805    TABLE ACCESS FULL SALES_FRIDAY (cr=376 pr=0 pw=0 time=1038628 us)
+
+********************************************************************************
+
+select sum(amount_sold)
+  from sales_friday s, promotions p
+ where s.promo_id = p.promo_id
+   and promo_category= 'TV'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          1          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        2      0.12       0.12          0        387          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        4      0.13       0.13          0        388          0           1
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+      1  SORT AGGREGATE (cr=387 pr=0 pw=0 time=124362 us)
+   1392   HASH JOIN  (cr=387 pr=0 pw=0 time=102504 us)
+    115    TABLE ACCESS FULL PROMOTIONS (cr=11 pr=0 pw=0 time=1150 us)
+ 129805    TABLE ACCESS FULL SALES_FRIDAY (cr=376 pr=0 pw=0 time=1038577 us)
+
+
+

@@ -1,0 +1,31 @@
+select /*+ index(c cust2_code1_code2_idx) */ p.town_name, c.cust_last_name
+  from customers2 c, postal_codes p
+ where p.code1 = c.code1
+   and p.code2 = c.code2
+   and p.code1 = '67'
+   and c.country_id = 52790
+/
+
+
+********************************************************************************
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch       62      0.07       0.07        871       1148          0         911
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       64      0.07       0.07        871       1148          0         911
+
+Misses in library cache during parse: 1
+Optimizer mode: FIRST_ROWS
+Parsing user id: 97
+Number of plan statistics captured: 1
+
+Rows (1st) Rows (avg) Rows (max)  Row Source Operation
+---------- ---------- ----------  ---------------------------------------------------
+       911        911        911  NESTED LOOPS  (cr=1148 pr=871 pw=0 time=31742 us)
+      1179       1179       1179   NESTED LOOPS  (cr=90 pr=8 pw=0 time=28009 ・)
+        10         10         10    TABLE ACCESS BY INDEX ROWID POSTAL_CODES (cr・)
+        10         10         10     INDEX RANGE SCAN POSTAL_CODES_PK (cr=4 pr=2・)
+      1179       1179       1179    INDEX RANGE SCAN CUST2_CODE1_CODE2_IDX (cr=80・)
+       911        911        911   TABLE ACCESS BY INDEX ROWID CUSTOMERS2 (cr=1058・)

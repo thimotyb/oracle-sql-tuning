@@ -1,0 +1,43 @@
+select cust_first_name, cust_last_name
+  from customers
+ where cust_last_name like '%ing'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.04       0.04          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch       44      0.12       0.13       1426       1501          0         635
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       46      0.16       0.17       1426       1501          0         635
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+    635  TABLE ACCESS FULL CUSTOMERS (cr=1501 pr=1426 pw=0 time=19839 us)
+
+********************************************************************************
+
+select cust_first_name, cust_last_name
+  from customers
+ where reverse(cust_last_name) like 'gni%'
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.01       0.01          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch       44      0.00       0.01         13        160          0         635
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       46      0.01       0.02         13        160          0         635
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+    635  TABLE ACCESS BY INDEX ROWID CUSTOMERS (cr=160 pr=13 pw=0 time=34715 us)
+    635   INDEX RANGE SCAN CUST_LAST_NAME_RIX (cr=47 pr=3 pw=0 time=27571 us)(object id 57261)
+

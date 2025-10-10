@@ -1,0 +1,59 @@
+select p.prod_name, t.week_ending_day, sum(s.amount_sold) sum_amount
+  from sales s, products p, times t
+ where s.time_id = t.time_id 
+   and s.prod_id = p.prod_id
+ group by p.prod_name, t.week_ending_day
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.01       0.01          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch      865      5.36       6.17       8107       9161          0       12957
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total      867      5.37       6.19       8107       9161          0       12957
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+  12957  HASH GROUP BY (cr=9161 pr=8107 pw=0 time=6219739 us)
+ 918843   HASH JOIN  (cr=9161 pr=8107 pw=0 time=71690408 us)
+   1826    TABLE ACCESS FULL TIMES (cr=56 pr=0 pw=0 time=14864 us)
+ 918843    HASH JOIN  (cr=9105 pr=8107 pw=0 time=46873361 us)
+     72     TABLE ACCESS FULL PRODUCTS (cr=4 pr=0 pw=0 time=1009 us)
+ 918843     PARTITION RANGE ALL PARTITION: 1 28 (cr=9101 pr=8107 pw=0 time=22059306 us)
+ 918843      TABLE ACCESS FULL SALES PARTITION: 1 28 (cr=9101 pr=8107 pw=0 time=8282663 us)
+
+********************************************************************************
+
+select p.prod_name, t.week_ending_day, sum(amount_sold)
+  from sales s, products p, times t
+ where s.time_id=t.time_id   
+   and s.prod_id = p.prod_id 
+   and t.week_ending_day between '01-AUG-1999' and '10-AUG-1999'
+ group by prod_name, week_ending_day
+
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.01       0.01          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch       10      0.60       0.59        534       8823          0         125
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       12      0.61       0.60        534       8823          0         125
+
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 65
+
+Rows     Row Source Operation
+-------  ---------------------------------------------------
+    125  HASH GROUP BY (cr=8823 pr=534 pw=0 time=591929 us)
+   7474   HASH JOIN  (cr=8823 pr=534 pw=0 time=574446 us)
+     72    TABLE ACCESS FULL PRODUCTS (cr=4 pr=0 pw=0 time=837 us)
+   7474    NESTED LOOPS  (cr=8819 pr=534 pw=0 time=368735 us)
+     14     TABLE ACCESS FULL TIMES (cr=55 pr=0 pw=0 time=782 us)
+   7474     PARTITION RANGE ITERATOR PARTITION: KEY KEY (cr=8764 pr=534 pw=0 time=360578 us)
+   7474      TABLE ACCESS FULL SALES PARTITION: KEY KEY (cr=8764 pr=534 pw=0 time=262804 us)
+
