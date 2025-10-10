@@ -54,8 +54,8 @@ This script will:
 | **CS** | cs | Cursor Sharing techniques | ✓ Created |
 | **AST** | ast | Automatic Statistics Tuning | ✓ Created |
 | **AGS** | ags | Automatic Gather Stats | ✓ Created |
-| **HR** | hr | Human Resources sample schema | ⚠ Optional* |
-| **SH** | sh | Sales History sample schema | ⚠ Optional* |
+| **HR** | hr | Human Resources sample schema (107 employees) | ✓ Created |
+| **SH** | sh | Sales History sample schema (structure only) | ⚠ Partial** |
 | **QRC** | qrc | Query Result Cache practice | ⚠ Optional* |
 | **SHC** | shc | Access Paths - SHC user | ⚠ Optional* |
 | **NIC** | nic | Access Paths - NIC user | ⚠ Optional* |
@@ -63,7 +63,9 @@ This script will:
 
 **Note:** All users have passwords matching their usernames (e.g., `spm/spm`, `ep/ep`).
 
-\* *Optional users require Oracle sample schemas to be installed separately (HR, SH) or may have setup script dependencies.*
+\* *Optional users may have setup script dependencies that need to be resolved.*
+
+\*\* *SH schema tables are created but data loading requires SQLcl (SQL Command Line) instead of SQL*Plus. To populate SH with data (918K sales records, 55K customers, etc.), install SQLcl in the container and run the official Oracle installation script. HR schema is fully populated and ready to use.*
 
 To verify which users were successfully created:
 ```bash

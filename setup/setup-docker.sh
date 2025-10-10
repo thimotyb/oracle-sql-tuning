@@ -29,6 +29,173 @@ sudo docker cp $REPO_DIR/demo $CONTAINER_NAME:$CONTAINER_WORK_DIR/
 sudo docker cp $REPO_DIR/code_ex $CONTAINER_NAME:$CONTAINER_WORK_DIR/
 
 echo
+echo "Downloading Oracle sample schemas..."
+if [ ! -d "/tmp/db-sample-schemas" ]; then
+    cd /tmp
+    git clone https://github.com/oracle-samples/db-sample-schemas.git
+    cd -
+fi
+
+echo "Copying sample schemas to container..."
+sudo docker cp /tmp/db-sample-schemas $CONTAINER_NAME:$CONTAINER_WORK_DIR/
+
+# Create automated install scripts on host
+mkdir -p /tmp/sample-schema-installers
+
+# Create HR install script
+cat > /tmp/sample-schema-installers/install_hr_auto.sql <<'HRSQL'
+SET ECHO OFF
+SET VERIFY OFF
+SET HEADING OFF
+SET FEEDBACK OFF
+SET SERVEROUTPUT ON
+WHENEVER SQLERROR EXIT SQL.SQLCODE
+
+PROMPT Installing HR (Human Resources) schema...
+
+DECLARE
+   v_user_exists   all_users.username%TYPE;
+BEGIN
+   SELECT MAX(username) INTO v_user_exists
+      FROM all_users WHERE username = 'HR';
+   IF v_user_exists IS NOT NULL THEN
+      EXECUTE IMMEDIATE 'DROP USER HR CASCADE';
+      DBMS_OUTPUT.PUT_LINE('Old HR schema has been dropped.');
+   END IF;
+END;
+/
+
+CREATE USER hr IDENTIFIED BY hr
+               DEFAULT TABLESPACE USERS
+               QUOTA UNLIMITED ON USERS;
+
+GRANT CREATE MATERIALIZED VIEW,
+      CREATE PROCEDURE,
+      CREATE SEQUENCE,
+      CREATE SESSION,
+      CREATE SYNONYM,
+      CREATE TABLE,
+      CREATE TRIGGER,
+      CREATE TYPE,
+      CREATE VIEW,
+      DBA
+  TO hr;
+
+ALTER SESSION SET CURRENT_SCHEMA=HR;
+ALTER SESSION SET NLS_LANGUAGE=American;
+ALTER SESSION SET NLS_TERRITORY=America;
+
+PROMPT Creating HR schema objects...
+@@hr_create.sql
+PROMPT Populating HR tables with data...
+@@hr_populate.sql
+PROMPT Creating HR procedural objects...
+@@hr_code.sql
+
+PROMPT HR schema installation complete.
+SET HEADING ON
+SET FEEDBACK OFF
+
+SELECT 'regions' AS "Table", 5 AS "Expected", count(1) AS "Actual" FROM hr.regions
+UNION ALL
+SELECT 'countries', 25, count(1) FROM hr.countries
+UNION ALL
+SELECT 'departments', 27, count(1) FROM hr.departments
+UNION ALL
+SELECT 'locations', 23, count(1) FROM hr.locations
+UNION ALL
+SELECT 'employees', 107, count(1) FROM hr.employees
+UNION ALL
+SELECT 'jobs', 19, count(1) FROM hr.jobs
+UNION ALL
+SELECT 'job_history', 10, count(1) FROM hr.job_history;
+
+PROMPT HR schema successfully installed!
+EXIT
+HRSQL
+
+# Create SH install script
+cat > /tmp/sample-schema-installers/install_sh_auto.sql <<'SHSQL'
+SET ECHO OFF
+SET VERIFY OFF
+SET HEADING OFF
+SET FEEDBACK OFF
+SET SERVEROUTPUT ON
+WHENEVER SQLERROR EXIT SQL.SQLCODE
+
+PROMPT Installing SH (Sales History) schema...
+
+DECLARE
+   v_user_exists   all_users.username%TYPE;
+BEGIN
+   SELECT MAX(username) INTO v_user_exists
+      FROM all_users WHERE username = 'SH';
+   IF v_user_exists IS NOT NULL THEN
+      EXECUTE IMMEDIATE 'DROP USER SH CASCADE';
+      DBMS_OUTPUT.PUT_LINE('Old SH schema has been dropped.');
+   END IF;
+END;
+/
+
+CREATE USER sh IDENTIFIED BY sh
+               DEFAULT TABLESPACE USERS
+               QUOTA UNLIMITED ON USERS;
+
+GRANT CREATE MATERIALIZED VIEW,
+      CREATE DIMENSION,
+      CREATE PROCEDURE,
+      CREATE SEQUENCE,
+      CREATE SESSION,
+      CREATE SYNONYM,
+      CREATE TABLE,
+      CREATE TRIGGER,
+      CREATE TYPE,
+      CREATE VIEW,
+      DBA
+  TO sh;
+
+ALTER SESSION SET CURRENT_SCHEMA=SH;
+ALTER SESSION SET NLS_LANGUAGE=American;
+ALTER SESSION SET NLS_TERRITORY=America;
+
+SELECT 'Start time: ' || systimestamp AS "Progress" FROM dual;
+PROMPT Creating SH schema objects...
+@@sh_create.sql
+PROMPT Populating SH tables (this may take several minutes)...
+@@sh_populate.sql
+SELECT 'End time: ' || systimestamp AS "Progress" FROM dual;
+
+PROMPT SH schema installation complete.
+SET HEADING ON
+SET FEEDBACK OFF
+
+SELECT 'channels' AS "Table", 5 AS "Expected", count(1) AS "Actual" FROM channels
+UNION ALL
+SELECT 'costs', 82112, count(1) FROM costs
+UNION ALL
+SELECT 'countries', 35, count(1) FROM countries
+UNION ALL
+SELECT 'customers', 55500, count(1) FROM customers
+UNION ALL
+SELECT 'products', 72, count(1) FROM products
+UNION ALL
+SELECT 'promotions', 503, count(1) FROM promotions
+UNION ALL
+SELECT 'sales', 918843, count(1) FROM sales
+UNION ALL
+SELECT 'times', 1826, count(1) FROM times
+UNION ALL
+SELECT 'supplementary_demographics', 4500, count(1) FROM supplementary_demographics;
+
+PROMPT SH schema successfully installed!
+EXIT
+SHSQL
+
+# Copy install scripts to container
+sudo docker cp /tmp/sample-schema-installers/install_hr_auto.sql $CONTAINER_NAME:$CONTAINER_WORK_DIR/db-sample-schemas/human_resources/
+sudo docker cp /tmp/sample-schema-installers/install_sh_auto.sql $CONTAINER_NAME:$CONTAINER_WORK_DIR/db-sample-schemas/sales_history/
+
+echo
 echo "Creating database users and schemas..."
 echo
 
@@ -133,6 +300,25 @@ create user ast identified by ast;
 grant dba to ast;
 exit
 EOF
+
+echo
+echo "=== Installing Oracle Sample Schemas (HR, SH) ==="
+if [ -d "db-sample-schemas" ]; then
+    # Install HR
+    echo "Installing HR (Human Resources) schema..."
+    cd db-sample-schemas/human_resources
+    sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @install_hr_auto.sql || echo "WARNING: HR installation failed"
+    cd $WORK_DIR
+
+    # Install SH
+    echo "Installing SH (Sales History) schema..."
+    echo "(This may take 5-10 minutes due to large data volume)"
+    cd db-sample-schemas/sales_history
+    sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @install_sh_auto.sql || echo "WARNING: SH installation failed"
+    cd $WORK_DIR
+else
+    echo "WARNING: Sample schemas directory not found, skipping HR and SH installation"
+fi
 
 echo
 echo "=== Setting up Hints/IOT schema ==="
