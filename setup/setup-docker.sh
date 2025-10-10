@@ -196,6 +196,42 @@ sudo docker cp /tmp/sample-schema-installers/install_hr_auto.sql $CONTAINER_NAME
 sudo docker cp /tmp/sample-schema-installers/install_sh_auto.sql $CONTAINER_NAME:$CONTAINER_WORK_DIR/db-sample-schemas/sales_history/
 
 echo
+echo "=== Installing Java 11 and SQLcl in container ==="
+
+# Install Java 11 in container (required for SQLcl)
+echo "Installing Java 11 in container..."
+sudo docker exec -u root $CONTAINER_NAME bash -c "
+if ls -d /usr/lib/jvm/java-1*-openjdk* 2>/dev/null | grep -E 'java-(11|17|21)' >/dev/null 2>&1; then
+    echo '✓ Java 11+ already installed'
+else
+    yum install -y java-11-openjdk-headless
+    echo '✓ Java 11 installed'
+fi
+"
+
+# Download SQLcl on host if not present
+SQLCL_ZIP="/tmp/sqlcl-latest.zip"
+if [ ! -f "$SQLCL_ZIP" ]; then
+    echo "Downloading SQLcl..."
+    wget -q --show-progress https://download.oracle.com/otn_software/java/sqldeveloper/sqlcl-latest.zip -O "$SQLCL_ZIP"
+else
+    echo "✓ SQLcl already downloaded"
+fi
+
+# Extract and copy SQLcl to container
+if ! sudo docker exec $CONTAINER_NAME test -d /opt/sqlcl; then
+    echo "Installing SQLcl in container..."
+    cd /tmp
+    unzip -q sqlcl-latest.zip
+    sudo docker cp sqlcl $CONTAINER_NAME:/opt/
+    sudo docker exec -u root $CONTAINER_NAME chmod -R 755 /opt/sqlcl
+    rm -rf /tmp/sqlcl
+    echo "✓ SQLcl installed to /opt/sqlcl in container"
+else
+    echo "✓ SQLcl already installed in container"
+fi
+
+echo
 echo "Creating database users and schemas..."
 echo
 
@@ -404,34 +440,6 @@ exit
 EOF
 
 echo
-echo "=== Installing Java 11 and SQLcl for SH data loading ==="
-# Check if Java 11+ is already installed
-if ls -d /usr/lib/jvm/java-1*-openjdk* 2>/dev/null | grep -E 'java-(11|17|21)' >/dev/null; then
-    echo "✓ Java 11+ already installed"
-else
-    echo "Installing Java 11..."
-    yum install -y java-11-openjdk-headless
-    echo "✓ Java 11 installed"
-fi
-
-# Set JAVA_HOME
-export JAVA_HOME=\$(ls -d /usr/lib/jvm/java-1*-openjdk* 2>/dev/null | grep -E 'java-(11|17|21)' | head -1)
-echo "JAVA_HOME: \$JAVA_HOME"
-
-# Download and install SQLcl if not present
-if [ ! -d "/opt/sqlcl" ]; then
-    echo "Downloading SQLcl..."
-    cd /tmp
-    wget -q --show-progress https://download.oracle.com/otn_software/java/sqldeveloper/sqlcl-latest.zip
-    unzip -q sqlcl-latest.zip
-    mv sqlcl /opt/
-    chmod -R 755 /opt/sqlcl
-    echo "✓ SQLcl installed to /opt/sqlcl"
-else
-    echo "✓ SQLcl already installed"
-fi
-
-echo
 echo "=== Installing Oracle Sample Schemas (HR, SH) ==="
 if [ -d "db-sample-schemas" ]; then
     # Install HR
@@ -462,7 +470,7 @@ SQLCLSCRIPT
     echo
     echo "=== Loading SH Schema Data (this may take 5-10 minutes) ==="
     cd $WORK_DIR/db-sample-schemas/sales_history
-    export JAVA_HOME=\$(ls -d /usr/lib/jvm/java-1*-openjdk* 2>/dev/null | grep -E 'java-(11|17|21)' | head -1)
+    export JAVA_HOME=\$(ls -d /usr/lib/jvm/java-1*-openjdk* 2>/dev/null | grep -E '"'"'java-(11|17|21)'"'"' | head -1)
     /opt/sqlcl/bin/sql sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @load_sh_data.sql || echo "WARNING: SH data loading failed"
     cd $WORK_DIR
 
