@@ -470,7 +470,7 @@ SQLCLSCRIPT
     echo
     echo "=== Loading SH Schema Data (this may take 5-10 minutes) ==="
     cd $WORK_DIR/db-sample-schemas/sales_history
-    export JAVA_HOME=\$(ls -d /usr/lib/jvm/java-1*-openjdk* 2>/dev/null | grep -E '"'"'java-(11|17|21)'"'"' | head -1)
+    export JAVA_HOME=\$(ls -d /usr/lib/jvm/java-*-openjdk* 2>/dev/null | head -1)
     /opt/sqlcl/bin/sql sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @load_sh_data.sql || echo "WARNING: SH data loading failed"
     cd $WORK_DIR
 
