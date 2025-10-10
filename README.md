@@ -45,45 +45,39 @@ This script will:
 
 **Users created:**
 
-| Username | Password | Purpose | Status |
-|----------|----------|---------|--------|
-| **SPM** | spm | SQL Performance Management | ✓ Created |
-| **EP** | ep | Explain Plan practice | ✓ Created |
-| **TRACE** | trace | Application Tracing practice | ✓ Created |
-| **ACS** | acs | Adaptive Cursor Sharing | ✓ Created |
-| **CS** | cs | Cursor Sharing techniques | ✓ Created |
-| **AST** | ast | Automatic Statistics Tuning | ✓ Created |
-| **AGS** | ags | Automatic Gather Stats | ✓ Created |
-| **HR** | hr | Human Resources sample schema (107 employees) | ✓ Created |
-| **SH** | sh | Sales History sample schema | ⚠ Data Optional*** |
-| **QRC** | qrc | Query Result Cache practice | ⚠ Optional* |
-| **SHC** | shc | Access Paths - SHC user | ⚠ Optional* |
-| **NIC** | nic | Access Paths - NIC user | ⚠ Optional* |
-| **IC** | ic | Access Paths - IC user | ⚠ Optional* |
+| Username | Password | Purpose | Tables Created | Status |
+|----------|----------|---------|----------------|--------|
+| **SPM** | spm | SQL Performance Management | - | ✓ Ready |
+| **EP** | ep | Explain Plan practice | TEST (20K rows) | ✓ Ready |
+| **TRACE** | trace | Application Tracing practice | SALES, SALES2, SALES3 | ✓ Ready |
+| **ACS** | acs | Adaptive Cursor Sharing | EMP (100K rows) | ✓ Ready |
+| **CS** | cs | Cursor Sharing techniques | EMP (100K rows) | ✓ Ready |
+| **AST** | ast | Automatic Statistics Tuning | - | ✓ Ready |
+| **AGS** | ags | Automatic Gather Stats | - | ✓ Ready |
+| **HR** | hr | Human Resources sample schema | 7 tables (107 employees) | ✓ Ready |
+| **SH** | sh | Sales History sample schema | 9 tables (918K sales records) | ✓ Ready |
+| **QRC** | qrc | Query Result Cache practice | - | ⚠ Optional* |
+| **SHC** | shc | Access Paths - SHC user | - | ⚠ Optional* |
+| **NIC** | nic | Access Paths - NIC user | - | ⚠ Optional* |
+| **IC** | ic | Access Paths - IC user | - | ⚠ Optional* |
 
 **Note:** All users have passwords matching their usernames (e.g., `spm/spm`, `ep/ep`).
 
 \* *Optional users may have setup script dependencies that need to be resolved.*
 
-\*\*\* *SH schema structure is created by `setup-docker.sh` but tables are empty. To load the full SH data (918K sales records, 55K customers, 82K costs, etc.), run the separate data loading script:*
+**All core workshop users and tables are created automatically by `setup-docker.sh`**, including:
+- **EP**: TEST table with 20,000 rows and indexes
+- **ACS/CS**: EMP tables with 100,000 rows each
+- **TRACE**: SALES, SALES2, SALES3 tables (sourced from SH.SALES)
+- **HR**: 7 tables with sample data (regions, countries, departments, locations, employees, jobs, job_history)
+- **SH**: 9 tables with full sample data (918K sales, 55K customers, 82K costs, etc.)
 
-```bash
-cd setup
-./install-sqlcl-and-load-sh.sh
-```
+The setup script automatically handles all dependencies and creates tables in the correct order (e.g., TRACE tables are created after SH is populated).
 
-*This script installs Java 11 and SQLcl in the container and loads all SH data (takes ~5-10 minutes). HR schema is fully populated and ready to use immediately after `setup-docker.sh`.*
-
-To verify which users were successfully created:
+To verify the setup and check table counts:
 ```bash
 cd setup
 ./check-setup-docker.sh
-```
-
-**Note:** If EP, ACS, CS, or TRACE users are missing tables after running `setup-docker.sh`, run the fix script:
-```bash
-cd setup
-./fix-missing-tables.sh
 ```
 
 ### 3. Install a GUI Client (Optional)
