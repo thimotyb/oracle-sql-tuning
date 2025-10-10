@@ -191,9 +191,23 @@ PROMPT SH schema successfully installed!
 EXIT
 SHSQL
 
+# Create SQLcl data loading script
+cat > /tmp/sample-schema-installers/load_sh_data.sql <<'SQLCL'
+SET ECHO OFF
+SET VERIFY OFF
+SET SERVEROUTPUT ON
+ALTER SESSION SET CURRENT_SCHEMA=SH;
+ALTER SESSION SET NLS_LANGUAGE=American;
+SELECT 'Loading SH data - Start time: ' || systimestamp FROM dual;
+@@sh_populate.sql
+SELECT 'Loading SH data - End time: ' || systimestamp FROM dual;
+EXIT
+SQLCL
+
 # Copy install scripts to container
 sudo docker cp /tmp/sample-schema-installers/install_hr_auto.sql $CONTAINER_NAME:$CONTAINER_WORK_DIR/db-sample-schemas/human_resources/
 sudo docker cp /tmp/sample-schema-installers/install_sh_auto.sql $CONTAINER_NAME:$CONTAINER_WORK_DIR/db-sample-schemas/sales_history/
+sudo docker cp /tmp/sample-schema-installers/load_sh_data.sql $CONTAINER_NAME:$CONTAINER_WORK_DIR/db-sample-schemas/sales_history/
 
 echo
 echo "=== Installing Java 11 and SQLcl in container ==="
@@ -454,19 +468,7 @@ if [ -d "db-sample-schemas" ]; then
     sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @install_sh_auto.sql || echo "WARNING: SH schema structure creation failed"
     cd $WORK_DIR
 
-    # Create SQLcl-compatible SH data loading script
-    cat > $WORK_DIR/db-sample-schemas/sales_history/load_sh_data.sql <<'SQLCLSCRIPT'
-SET ECHO OFF
-SET VERIFY OFF
-SET SERVEROUTPUT ON
-ALTER SESSION SET CURRENT_SCHEMA=SH;
-ALTER SESSION SET NLS_LANGUAGE=American;
-SELECT 'Loading SH data - Start time: ' || systimestamp FROM dual;
-@@sh_populate.sql
-SELECT 'Loading SH data - End time: ' || systimestamp FROM dual;
-EXIT
-SQLCLSCRIPT
-
+    # Load SH data using SQLcl (load_sh_data.sql was already copied to container)
     echo
     echo "=== Loading SH Schema Data (this may take 5-10 minutes) ==="
     cd $WORK_DIR/db-sample-schemas/sales_history
