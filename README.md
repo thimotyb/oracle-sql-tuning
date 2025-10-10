@@ -55,7 +55,7 @@ This script will:
 | **AST** | ast | Automatic Statistics Tuning | ✓ Created |
 | **AGS** | ags | Automatic Gather Stats | ✓ Created |
 | **HR** | hr | Human Resources sample schema (107 employees) | ✓ Created |
-| **SH** | sh | Sales History sample schema (structure only) | ⚠ Partial** |
+| **SH** | sh | Sales History sample schema | ⚠ Data Optional*** |
 | **QRC** | qrc | Query Result Cache practice | ⚠ Optional* |
 | **SHC** | shc | Access Paths - SHC user | ⚠ Optional* |
 | **NIC** | nic | Access Paths - NIC user | ⚠ Optional* |
@@ -65,7 +65,14 @@ This script will:
 
 \* *Optional users may have setup script dependencies that need to be resolved.*
 
-\*\* *SH schema tables are created but data loading requires SQLcl (SQL Command Line) instead of SQL*Plus. To populate SH with data (918K sales records, 55K customers, etc.), install SQLcl in the container and run the official Oracle installation script. HR schema is fully populated and ready to use.*
+\*\*\* *SH schema structure is created by `setup-docker.sh` but tables are empty. To load the full SH data (918K sales records, 55K customers, 82K costs, etc.), run the separate data loading script:*
+
+```bash
+cd setup
+./install-sqlcl-and-load-sh.sh
+```
+
+*This script installs Java 11 and SQLcl in the container and loads all SH data (takes ~5-10 minutes). HR schema is fully populated and ready to use immediately after `setup-docker.sh`.*
 
 To verify which users were successfully created:
 ```bash
