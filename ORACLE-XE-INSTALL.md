@@ -208,9 +208,60 @@ GRANT UNLIMITED TABLESPACE TO myuser;
 EXIT;
 ```
 
-### Install Sample Schemas (SH, HR, etc.)
+### Install Sample Schemas and Workshop Environment (Automated)
 
-The sample schemas mentioned in this repository's CLAUDE.md (SH, HR) need to be installed separately. You can download them from Oracle's GitHub:
+This repository includes an automated setup script that installs all necessary sample schemas (SH, HR) and creates all workshop users with their required tables. The script:
+
+- Installs Java 11 and Oracle SQLcl in the container (required for CSV data loading)
+- Creates all workshop users (EP, ACS, CS, TRACE, SPM, AST)
+- Installs and populates Oracle sample schemas (HR, SH)
+- Creates and populates workshop-specific tables with test data
+- Completes in approximately 5-6 minutes
+
+**Run the automated setup:**
+
+```bash
+cd setup
+./setup-docker.sh
+```
+
+The script will:
+1. Install Java 11 in the container (~30 seconds)
+2. Download and install Oracle SQLcl 25.3 (~10 seconds)
+3. Create 8 workshop users with proper permissions
+4. Install HR schema (7 tables, 107 rows)
+5. Install SH schema (9 tables, 918,843 rows loaded via SQLcl)
+6. Create workshop-specific tables:
+   - EP.TEST (20,000 rows)
+   - ACS.EMP (100,000 rows)
+   - CS.EMP (100,000 rows)
+   - TRACE.SALES, SALES2, SALES3 (115,000 total rows)
+
+**Verify the installation:**
+
+```bash
+# Check all users were created
+sudo docker exec oracle21c bash -c "
+echo \"SELECT username, account_status FROM dba_users
+WHERE username IN ('EP','ACS','CS','TRACE','SPM','AST','HR','SH')
+ORDER BY username;\" | sqlplus -s sys/Oracle123@//localhost:1521/XEPDB1 as sysdba"
+
+# Verify table row counts
+sudo docker exec oracle21c bash -c "
+echo \"SELECT 'SH SALES: ' || COUNT(*) || ' rows' FROM sh.sales;
+SELECT 'HR EMPLOYEES: ' || COUNT(*) || ' rows' FROM hr.employees;\" |
+sqlplus -s sys/Oracle123@//localhost:1521/XEPDB1 as sysdba"
+```
+
+Expected results:
+- All 8 users with OPEN status
+- SH.SALES: 918,843 rows
+- HR.EMPLOYEES: 107 rows
+- Total data: 1,292,065 rows across all tables
+
+**Manual installation (alternative):**
+
+If you prefer to install sample schemas manually:
 
 ```bash
 # Clone the sample schemas repository
@@ -218,6 +269,8 @@ git clone https://github.com/oracle-samples/db-sample-schemas.git
 
 # Copy into the container and install (instructions vary by schema)
 ```
+
+**Note:** The automated setup script (`setup-docker.sh`) is the recommended approach as it handles all dependencies, common issues, and verifies the installation automatically.
 
 ### Backup and Restore
 
