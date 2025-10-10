@@ -226,6 +226,29 @@ else
     echo "SKIP: Explain Plan setup files not found"
 fi
 
+echo "=== Creating EP TEST table ==="
+sqlplus -s ep/ep@//localhost:1521/XEPDB1 <<EOF
+SET SERVEROUTPUT ON FEEDBACK OFF
+drop table test purge;
+
+create table test(c number, d varchar2(500));
+
+begin
+for i in 1..20000 loop
+insert into test values(1,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+end loop;
+commit;
+end;
+/
+
+create index test_c_indx on test(c);
+
+exec dbms_stats.gather_schema_stats('EP');
+
+SELECT 'EP TEST table: ' || COUNT(*) || ' rows' FROM test;
+EXIT;
+EOF
+
 echo
 echo "=== Setting up Application Tracing (TRACE) schema ==="
 if [ -f "solutions/Application_Tracing/at_setup.sql" ]; then
@@ -235,6 +258,9 @@ if [ -f "solutions/Application_Tracing/at_setup.sql" ]; then
 else
     echo "SKIP: Application Tracing setup files not found"
 fi
+
+echo "=== Creating TRACE SALES tables (will run after SH is installed) ===
+# Placeholder - will be created after SH installation below"
 
 echo
 echo "=== Setting up Access Paths ==="
@@ -280,6 +306,44 @@ else
     echo "SKIP: ACS setup files not found"
 fi
 
+echo "=== Creating ACS EMP table ==="
+sqlplus -s acs/acs@//localhost:1521/XEPDB1 <<EOF
+SET SERVEROUTPUT ON FEEDBACK OFF
+drop table emp purge;
+
+create table emp
+(
+ empno   number,
+ ename   varchar2(20),
+ phone   varchar2(20),
+ deptno  number
+);
+
+insert into emp
+  with tdata as
+      (select rownum empno
+        from all_objects
+        where rownum <= 1000)
+  select rownum,
+        dbms_random.string ('u', 20),
+        dbms_random.string ('u', 20),
+        case
+           when rownum/100000 <= 0.001 then mod(rownum, 10)
+           else 10
+        end
+   from tdata a, tdata b
+  where rownum <= 100000;
+
+commit;
+
+create index emp_i1 on emp(deptno);
+
+exec dbms_stats.gather_table_stats(null, 'EMP', METHOD_OPT => 'FOR COLUMNS DEPTNO SIZE 10', CASCADE => TRUE);
+
+SELECT 'ACS EMP table: ' || COUNT(*) || ' rows' FROM emp;
+EXIT;
+EOF
+
 echo
 echo "=== Setting up Cursor Sharing (CS) schema ==="
 if [ -f "solutions/Cursor_Sharing/cs_setup.sql" ]; then
@@ -289,6 +353,44 @@ if [ -f "solutions/Cursor_Sharing/cs_setup.sql" ]; then
 else
     echo "SKIP: CS setup files not found"
 fi
+
+echo "=== Creating CS EMP table ==="
+sqlplus -s cs/cs@//localhost:1521/XEPDB1 <<EOF
+SET SERVEROUTPUT ON FEEDBACK OFF
+drop table emp purge;
+
+create table emp
+(
+ empno   number,
+ ename   varchar2(20),
+ phone   varchar2(20),
+ deptno  number
+);
+
+insert into emp
+  with tdata as
+      (select rownum empno
+        from all_objects
+        where rownum <= 1000)
+  select rownum,
+        dbms_random.string ('u', 20),
+        dbms_random.string ('u', 20),
+        case
+           when rownum/100000 <= 0.001 then mod(rownum, 10)
+           else 10
+        end
+   from tdata a, tdata b
+  where rownum <= 100000;
+
+commit;
+
+create index emp_i1 on emp(deptno);
+
+execute dbms_stats.gather_table_stats(null, 'EMP', cascade => true);
+
+SELECT 'CS EMP table: ' || COUNT(*) || ' rows' FROM emp;
+EXIT;
+EOF
 
 echo
 echo "=== Creating AST user ==="
@@ -316,6 +418,29 @@ if [ -d "db-sample-schemas" ]; then
     cd db-sample-schemas/sales_history
     sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @install_sh_auto.sql || echo "WARNING: SH installation failed"
     cd $WORK_DIR
+
+    # Now create TRACE tables (depends on SH.SALES)
+    echo
+    echo "=== Creating TRACE SALES tables ==="
+    sqlplus -s trace/trace@//localhost:1521/XEPDB1 <<EOF
+SET SERVEROUTPUT ON FEEDBACK OFF
+drop table sales purge;
+drop table sales2 purge;
+drop table sales3 purge;
+
+create table sales as select * from sh.sales WHERE ROWNUM <= 100000;
+
+create table sales2 as select * from sh.sales WHERE ROWNUM <= 10000;
+
+create table sales3 as select * from sh.sales WHERE ROWNUM <= 5000;
+
+commit;
+
+SELECT 'TRACE SALES table: ' || COUNT(*) || ' rows' FROM sales;
+SELECT 'TRACE SALES2 table: ' || COUNT(*) || ' rows' FROM sales2;
+SELECT 'TRACE SALES3 table: ' || COUNT(*) || ' rows' FROM sales3;
+EXIT;
+EOF
 else
     echo "WARNING: Sample schemas directory not found, skipping HR and SH installation"
 fi
@@ -428,14 +553,15 @@ echo "========================================="
 echo "Workshop Setup Complete!"
 echo "========================================="
 echo
-echo "Created users and schemas:"
+echo "Created users and schemas with tables:"
 echo "  - SPM (SQL Performance Management)"
-echo "  - EP (Explain Plan)"
-echo "  - TRACE (Application Tracing)"
-echo "  - ACS (Adaptive Cursor Sharing)"
-echo "  - CS (Cursor Sharing)"
+echo "  - EP (Explain Plan) - TEST table with 20,000 rows"
+echo "  - TRACE (Application Tracing) - SALES, SALES2, SALES3 tables"
+echo "  - ACS (Adaptive Cursor Sharing) - EMP table with 100,000 rows"
+echo "  - CS (Cursor Sharing) - EMP table with 100,000 rows"
 echo "  - AST (Automatic Statistics Tuning)"
-echo "  - HR (unlocked and configured)"
+echo "  - HR (unlocked and configured with sample data)"
+echo "  - SH (Sales History with sample data)"
 echo "  - SHC, NIC, IC (Access Paths users)"
 echo "  - QRC (Query Result Cache)"
 echo
