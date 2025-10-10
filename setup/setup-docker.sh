@@ -32,8 +32,8 @@ echo
 echo "Creating database users and schemas..."
 echo
 
-# Create setup script inside container
-sudo docker exec $CONTAINER_NAME bash -c "cat > $CONTAINER_WORK_DIR/run_setup.sh" <<'SETUPSCRIPT'
+# Create setup script locally first
+cat > /tmp/run_setup.sh <<'SETUPSCRIPT'
 #!/bin/bash
 
 WORK_DIR="/tmp/oracle-workshop"
@@ -53,7 +53,7 @@ echo
 echo "=== Setting up Explain Plan (EP) schema ==="
 if [ -f "solutions/Explain_Plan/ep_setup.sql" ]; then
     cd solutions/Explain_Plan
-    sqlplus / as sysdba @ep_setup.sql || echo "WARNING: EP setup failed"
+    sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @ep_setup.sql || echo "WARNING: EP setup failed"
     cd $WORK_DIR
 else
     echo "SKIP: Explain Plan setup files not found"
@@ -63,7 +63,7 @@ echo
 echo "=== Setting up Application Tracing (TRACE) schema ==="
 if [ -f "solutions/Application_Tracing/at_setup.sql" ]; then
     cd solutions/Application_Tracing
-    sqlplus / as sysdba @at_setup.sql || echo "WARNING: Application Tracing setup failed"
+    sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @at_setup.sql || echo "WARNING: Application Tracing setup failed"
     cd $WORK_DIR
 else
     echo "SKIP: Application Tracing setup files not found"
@@ -75,15 +75,15 @@ if [ -d "solutions/Access_Paths" ]; then
     cd solutions/Access_Paths
 
     if [ -f "ap_setup.sql" ]; then
-        sqlplus / as sysdba @ap_setup.sql || echo "WARNING: ap_setup failed"
+        sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @ap_setup.sql || echo "WARNING: ap_setup failed"
     fi
 
     if [ -f "idx_setup.sql" ]; then
-        sqlplus sh/sh @idx_setup.sql || echo "WARNING: idx_setup failed"
+        sqlplus sh/sh@//localhost:1521/XEPDB1 @idx_setup.sql || echo "WARNING: idx_setup failed"
     fi
 
     if [ -f "create_mysales_index.sql" ]; then
-        sqlplus sh/sh @create_mysales_index.sql || echo "WARNING: create_mysales_index failed"
+        sqlplus sh/sh@//localhost:1521/XEPDB1 @create_mysales_index.sql || echo "WARNING: create_mysales_index failed"
     fi
 
     cd $WORK_DIR
@@ -95,6 +95,7 @@ echo
 echo "=== Creating SPM user ==="
 sqlplus /nolog <<EOF
 connect / as sysdba
+alter session set container=XEPDB1;
 set echo on
 drop user spm cascade;
 create user spm identified by spm;
@@ -106,7 +107,7 @@ echo
 echo "=== Setting up Adaptive Cursor Sharing (ACS) schema ==="
 if [ -f "solutions/Adaptive_Cursor_Sharing/acs_setup.sql" ]; then
     cd solutions/Adaptive_Cursor_Sharing
-    sqlplus / as sysdba @acs_setup.sql || echo "WARNING: ACS setup failed"
+    sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @acs_setup.sql || echo "WARNING: ACS setup failed"
     cd $WORK_DIR
 else
     echo "SKIP: ACS setup files not found"
@@ -116,7 +117,7 @@ echo
 echo "=== Setting up Cursor Sharing (CS) schema ==="
 if [ -f "solutions/Cursor_Sharing/cs_setup.sql" ]; then
     cd solutions/Cursor_Sharing
-    sqlplus / as sysdba @cs_setup.sql || echo "WARNING: CS setup failed"
+    sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @cs_setup.sql || echo "WARNING: CS setup failed"
     cd $WORK_DIR
 else
     echo "SKIP: CS setup files not found"
@@ -124,7 +125,9 @@ fi
 
 echo
 echo "=== Creating AST user ==="
-sqlplus / as sysdba <<EOF
+sqlplus /nolog <<EOF
+connect / as sysdba
+alter session set container=XEPDB1;
 drop user ast cascade;
 create user ast identified by ast;
 grant dba to ast;
@@ -135,7 +138,7 @@ echo
 echo "=== Setting up Hints/IOT schema ==="
 if [ -f "solutions/Hints/iot_setup.sql" ]; then
     cd solutions/Hints
-    sqlplus / as sysdba @iot_setup.sql || echo "WARNING: IOT setup failed"
+    sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @iot_setup.sql || echo "WARNING: IOT setup failed"
     cd $WORK_DIR
 else
     echo "SKIP: Hints/IOT setup files not found"
@@ -143,7 +146,9 @@ fi
 
 echo
 echo "=== Unlocking HR account ==="
-sqlplus / as sysdba <<EOF
+sqlplus /nolog <<EOF
+connect / as sysdba
+alter session set container=XEPDB1;
 alter user hr identified by hr account unlock;
 grant dba to hr;
 grant select_catalog_role to hr;
@@ -153,7 +158,9 @@ EOF
 
 echo
 echo "=== Granting ALTER SESSION to PUBLIC ==="
-sqlplus / as sysdba <<EOF
+sqlplus /nolog <<EOF
+connect / as sysdba
+alter session set container=XEPDB1;
 GRANT ALTER SESSION TO PUBLIC;
 exit
 EOF
@@ -195,7 +202,7 @@ echo
 echo "=== Setting up System Statistics ==="
 if [ -f "solutions/System_Stats/sysstats_setup.sql" ]; then
     cd solutions/System_Stats
-    sqlplus / as sysdba @sysstats_setup.sql || echo "WARNING: System Stats setup failed"
+    sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @sysstats_setup.sql || echo "WARNING: System Stats setup failed"
     cd $WORK_DIR
 else
     echo "SKIP: System Stats setup files not found"
@@ -205,7 +212,7 @@ echo
 echo "=== Setting up Automatic Gather Stats ==="
 if [ -f "solutions/Automatic_Gather_Stats/ags_setup.sql" ]; then
     cd solutions/Automatic_Gather_Stats
-    sqlplus / as sysdba @ags_setup.sql || echo "WARNING: AGS setup failed"
+    sqlplus sys/Oracle123@//localhost:1521/XEPDB1 as sysdba @ags_setup.sql || echo "WARNING: AGS setup failed"
     cd $WORK_DIR
 else
     echo "SKIP: AGS setup files not found"
@@ -217,12 +224,18 @@ echo "Setup Complete!"
 echo "========================================="
 SETUPSCRIPT
 
-# Make the script executable and run it
-sudo docker exec $CONTAINER_NAME chmod +x $CONTAINER_WORK_DIR/run_setup.sh
+# Copy the setup script to the container
+chmod +x /tmp/run_setup.sh
+sudo docker cp /tmp/run_setup.sh $CONTAINER_NAME:$CONTAINER_WORK_DIR/run_setup.sh
+
+# Run the script inside the container
 echo
 echo "Running setup inside container..."
 echo
-sudo docker exec -it $CONTAINER_NAME bash -c "cd $CONTAINER_WORK_DIR && ./run_setup.sh"
+sudo docker exec $CONTAINER_NAME bash -c "cd $CONTAINER_WORK_DIR && ./run_setup.sh"
+
+# Clean up local temp file
+rm -f /tmp/run_setup.sh
 
 echo
 echo "========================================="

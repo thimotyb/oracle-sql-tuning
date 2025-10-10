@@ -85,9 +85,10 @@ for user in "${REQUIRED_USERS[@]}"; do
     printf "  %-10s: " "$user"
     USER_STATUS=$(sudo docker exec $CONTAINER_NAME bash -c "cat <<EOF | sqlplus -s / as sysdba
 SET HEADING OFF FEEDBACK OFF PAGESIZE 0
+ALTER SESSION SET CONTAINER=XEPDB1;
 SELECT account_status FROM dba_users WHERE username='$user';
 EXIT;
-EOF" | tr -d ' \n\r')
+EOF" | grep -v "Session altered" | tr -d ' \n\r')
 
     if [ "$USER_STATUS" = "OPEN" ]; then
         echo "✓ OPEN"
@@ -105,9 +106,10 @@ for schema in "SH" "HR"; do
     printf "  %-10s: " "$schema"
     SCHEMA_STATUS=$(sudo docker exec $CONTAINER_NAME bash -c "cat <<EOF | sqlplus -s / as sysdba
 SET HEADING OFF FEEDBACK OFF PAGESIZE 0
+ALTER SESSION SET CONTAINER=XEPDB1;
 SELECT account_status FROM dba_users WHERE username='$schema';
 EXIT;
-EOF" | tr -d ' \n\r')
+EOF" | grep -v "Session altered" | tr -d ' \n\r')
 
     if [ "$SCHEMA_STATUS" = "OPEN" ]; then
         echo "✓ OPEN"
@@ -125,6 +127,7 @@ echo
 echo "[8/8] All users with OPEN status:"
 echo
 sudo docker exec $CONTAINER_NAME bash -c "cat <<EOF | sqlplus -s / as sysdba
+ALTER SESSION SET CONTAINER=XEPDB1;
 SET LINESIZE 120
 COLUMN username FORMAT A30
 COLUMN account_status FORMAT A20
