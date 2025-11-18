@@ -67,6 +67,10 @@ CREATE TABLE salgrade
        losal NUMBER,
        hisal NUMBER);
 
+PROMPT Creating supporting indexes...
+-- PK constraints create indexes automatically; add one for the FK column
+CREATE INDEX emp_deptno_i ON emp(deptno);
+
 PROMPT Loading data...
 INSERT INTO dept VALUES (10,'ACCOUNTING','NEW YORK');
 INSERT INTO dept VALUES (20,'RESEARCH','DALLAS');
